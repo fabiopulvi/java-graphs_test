@@ -39,7 +39,7 @@ public class BruteExample {
 
         // Generate some random nodes
         Random r = new Random();
-        int count = 1000;
+        int count = 100;
 
         ArrayList<Node> nodes = new ArrayList<Node>(count);
         for (int i = 0; i < count; i++) {
