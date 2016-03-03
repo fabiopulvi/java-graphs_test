@@ -30,7 +30,7 @@ public class app2_fabio {
         // The minimum is to define k (number of edges per node)
         // and a similarity metric between nodes
         Brute builder = new Brute<Integer>();
-        builder.setK(1);
+        builder.setK(2);
         builder.setSimilarity(new SimilarityInterface<Integer>() {
 
             public double similarity(Integer value1, Integer value2) {
@@ -77,23 +77,44 @@ public class app2_fabio {
 
         System.out.println("The node to delete is:"+N1.id+" "+N1.value+" "+N1_list);
 
+
         //Let's find now the nodes which have this value among their entries
         for (Node<Integer> nodetemp : online_graph.getNodes()) {
+            NeighborList nl2update=null;
+            NeighborList nl_updated;
+            ArrayList<Neighbor> nl_updated_array = new ArrayList<Neighbor>();
+
             NeighborList nl_temp = graph.get(nodetemp);
             ArrayList other_values = new ArrayList();
             for (Neighbor n : nl_temp) {
                 if (n.node.id.equals(N1.id)) {
                     System.out.println("This node has N1 as neighbour: "+nodetemp.id);
                     System.out.println("Infact its nl is: "+nl_temp);
+                    nl2update=nl_temp;
+                   // System.out.println("Infact its nl is: "+nl2update);
                 }
             }
 
+            //For the moment, just change the neighbourlist with a trivial point, then we will
+            //how to find the replacements
+            if (nl2update!=null) {
+                for (Neighbor n : nl2update) {
+                    if (!n.node.id.equals(N1.id))
+                        nl_updated_array.add(n);
+                    else { nl_updated_array.add(new Neighbor(new Node(String.valueOf(13), 133), 0.33)); //superdupa toy node!
 
-            if (nl_temp.contains(N1)) {
-                System.out.print(nodetemp);
-                System.out.println(nl_temp);
+                    }
+                }
+                System.out.println("\n The updated nl is: " + nl_updated_array);
             }
+        //preparing the new version of the modified node
+
+
+
+
+        //let's delete the oldest version
         }
+
 
 
 
