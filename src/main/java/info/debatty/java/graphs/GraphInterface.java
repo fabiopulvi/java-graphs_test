@@ -58,6 +58,8 @@ public interface GraphInterface<T> {
 
     int getK();
 
+    public NeighborList remove( Node<T> node);
+
     public Iterable<Node<T>> getNodes();
 
     SimilarityInterface<T> getSimilarity();

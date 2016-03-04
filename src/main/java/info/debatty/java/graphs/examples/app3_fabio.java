@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by fabio on 23/02/16.
  */
-public class app2_fabio {
+public class app3_fabio {
     public static int K = 2;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {

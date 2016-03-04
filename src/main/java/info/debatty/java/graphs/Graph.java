@@ -587,5 +587,11 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             return nl;
 
         }
+
+    }
+    // remove a node from the graph
+    //#Fabio
+    public NeighborList remove (Node<T> node) {
+        return map.remove(node);
     }
 }
