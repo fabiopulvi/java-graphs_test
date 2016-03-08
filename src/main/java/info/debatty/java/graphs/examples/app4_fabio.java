@@ -32,7 +32,7 @@ public class app4_fabio {
             nodes.add(new Node<Integer>(String.valueOf(i), value));
 
         }
-       // nodes.add(new Node<Integer>(String.valueOf(11), 111));
+        // nodes.add(new Node<Integer>(String.valueOf(11), 111));
         //nodes_never_existed.add(new Node<Integer>(String.valueOf(11), 111));
         //nodes.add(new Node<Integer>(String.valueOf(12), 122));
         // Instantiate and configure the brute-force graph building algorithm
@@ -83,23 +83,23 @@ public class app4_fabio {
 
         //the 12th node has to be deleted, the one with id 12 and coordinate 122
         //first save his neighbourlist to a temporary n1
-    ;
+        ;
         Node<Integer> N1 = null;
         NeighborList N1_list = null;
         //ArrayList<Node<Integer>> nodes2 = new ArrayList<Node<Integer>>();
         int flag=0;
         for (Node<Integer> nodetemp : online_graph.getNodes()) {
 
-              if (Integer.parseInt(nodetemp.id)==0) {
-                    N1 = new Node<Integer>(nodetemp.id, nodetemp.value);
-                    N1_list = online_graph.get(nodetemp);
-                    break;
-                }
+            if (Integer.parseInt(nodetemp.id)==0) {
+                N1 = new Node<Integer>(nodetemp.id, nodetemp.value);
+                N1_list = online_graph.get(nodetemp);
+                break;
             }
-           // else
-            //if (Integer.parseInt(nodetemp.id)<Integer.parseInt(N1.id)) {
-             //   N1 = new Node<Integer>(nodetemp.id, nodetemp.value);
-              //  N1_list= online_graph.get(nodetemp);
+        }
+        // else
+        //if (Integer.parseInt(nodetemp.id)<Integer.parseInt(N1.id)) {
+        //   N1 = new Node<Integer>(nodetemp.id, nodetemp.value);
+        //  N1_list= online_graph.get(nodetemp);
 
 //            }
 
@@ -115,7 +115,7 @@ public class app4_fabio {
 
             Node node_temp = null;
             NeighborList nl_temp = graph.get(node_all);
-           // ArrayList other_values = new ArrayList();
+            // ArrayList other_values = new ArrayList();
             for (Neighbor n : nl_temp) {
                 if (n.node.id.equals(N1.id)) {
                     node_temp= new Node<Integer> (node_all.id, node_all.value);
@@ -123,7 +123,7 @@ public class app4_fabio {
                     System.out.println("Infact its nl is: "+nl_temp);
                     nodes2del_array.add(node_temp);
                     break;
-                   // System.out.println("Infact its nl is: "+nl2update);
+                    // System.out.println("Infact its nl is: "+nl2update);
                 }
             }
 
@@ -169,7 +169,7 @@ public class app4_fabio {
         }
 */
 // make a comparison with a bruteforce approach without the node N1 from the beginning
-        
+
         for (Node n : nodes_never_existed) {
             NeighborList nl = graph2.get(n);
 
@@ -212,7 +212,7 @@ public class app4_fabio {
 
         }
 */
-      //  builder.test(nodes);
+        //  builder.test(nodes);
 /*
 
         // Convert the graph to an online graph (to which we can add new nodes)
