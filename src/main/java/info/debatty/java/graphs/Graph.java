@@ -589,9 +589,68 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         }
 
     }
-    // remove a node from the graph
-    //#Fabio
+
+    /**
+     * remove a node from the graph
+     * @param node to delete
+     * #Fabio
+     */
+
     public NeighborList remove (Node<T> node) {
         return map.remove(node);
     }
+
+    /**
+     * remove a node from the graph and update the neighbourlist
+     * deleting the node from the neighbourlists without updating it
+     *
+     * @param node to delete
+     * #Fabio
+     */
+
+    public void removeNodeFromNeighbourlist (Node<T> node) {
+        //scroll the NLs
+        for (NeighborList nl : map.values()) {
+            //can't do it without scrolling because the nl is composed of neighbors and not node
+            //we would miss the distance measure and the "remove" function would not
+            //find the node
+        ArrayList<Neighbor> to_remove = new ArrayList<Neighbor>();
+        for (Neighbor n : nl) {
+            if (n.node.equals(node)) {
+                to_remove.add(n);
+            }
+        }
+
+            boolean result= nl.removeAll(to_remove);
+           // System.out.println("\n looking for:" +node+" it says: "+result+" and the nl is: "+nl);
+        }
+    }
+
+    /*
+    public NeighborList removeNodeFromNeighbourlist (Node<T> node) {
+        //hashmap of the nodes to update
+
+        //iterate all the nodes
+        for (Node<T> graph_node : map.keySet()) {
+            //look in their nl
+            NeighborList nl = map.get(graph_node);
+            //search for the node
+            for (Neighbor n : nl) {
+                if (n.node.id.equals(node.id)) {
+                    //backup this node
+                    Node node_temp= new Node<T> (graph_node.id, graph_node.value);
+                    NeighborList nl_temp = nl;
+
+                }
+            }
+
+        }
+
+
+
+        //finally remove the node from the graph
+        return map.remove(node);
+
+    }
+ */
 }

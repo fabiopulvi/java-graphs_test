@@ -225,6 +225,8 @@ public class OnlineGraph<T> implements GraphInterface<T> {
 
     public NeighborList remove (Node<T> node) {return graph.remove(node);}
 
+    public void removeNodeFromNeighbourlist (Node<T> node) {graph.removeNodeFromNeighbourlist(node);}
+
     public NeighborList searchExhaustive(T query, int K)
             throws InterruptedException, ExecutionException {
         return graph.searchExhaustive(query, K);

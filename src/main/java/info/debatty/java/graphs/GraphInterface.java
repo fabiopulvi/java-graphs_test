@@ -58,7 +58,9 @@ public interface GraphInterface<T> {
 
     int getK();
 
-    public NeighborList remove( Node<T> node);
+    NeighborList remove( Node<T> node);
+
+    void removeNodeFromNeighbourlist ( Node<T> node);
 
     public Iterable<Node<T>> getNodes();
 
