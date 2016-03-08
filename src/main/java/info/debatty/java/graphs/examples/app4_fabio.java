@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
  * - the node with id 0 disappears
  * - more than one nodes are updated
  */
-public class app3_fabio {
+public class app4_fabio {
     public static int K = 3;
     public static int count = 100;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -27,7 +27,7 @@ public class app3_fabio {
         ArrayList<Node> nodes_never_existed = new ArrayList<Node>(count);
         for (int i = 0; i < count; i++) {
             // The value of our nodes will be an int
-            int value = r.nextInt(10);
+            int value = r.nextInt(100);
             if (i!=0) nodes_never_existed.add(new Node<Integer>(String.valueOf(i), value));
             nodes.add(new Node<Integer>(String.valueOf(i), value));
 
@@ -121,16 +121,17 @@ public class app3_fabio {
                     node_temp= new Node<Integer> (node_all.id, node_all.value);
                     System.out.println("The: "+node_all.id+" node has N1 as neighbour");
                     System.out.println("Infact its nl is: "+nl_temp);
-                    nl2update=nl_temp;
+                    nodes2del_array.add(node_temp);
                     break;
                    // System.out.println("Infact its nl is: "+nl2update);
                 }
             }
 
-            //For the moment, just change the neighbourlist with a trivial point, then we will
+            //Find the neighbourlist with a trivial point, then we will
             //how to find the replacements
-            if (nl2update!=null) {
-                for (Neighbor n : nl2update) {
+           /* if (nl2update!=null) {
+                nl_updated=online_graph.search((Integer) node_temp.value,K);
+                  for (Neighbor n : nl2update) {
                     if (!n.node.id.equals(N1.id))
                         nl_updated.add(n);
                     else { nl_updated.add(new Neighbor(new Node(String.valueOf(99), 99), 0.99)); //superdupa toy node!
@@ -144,9 +145,17 @@ public class app3_fabio {
 
 
             }
+*/
 
 
-
+        }
+        System.out.println("The nodes to delete are: "+nodes2del_array.size());
+        //delete the nodes to update from the graph
+        for (Node<Integer> node : nodes2del_array) {
+            online_graph.remove(node);
+        }
+        for (Node<Integer> node2 : nodes2del_array) {
+            online_graph.addNode(node2);
         }
 
 
@@ -158,31 +167,40 @@ public class app3_fabio {
             System.out.print(node_all);
            System.out.println(nl);
         }
-        */
+*/
 // make a comparison with a bruteforce approach without the node N1 from the beginning
-
+        
         for (Node n : nodes_never_existed) {
             NeighborList nl = graph2.get(n);
 
             NeighborList nl2 = online_graph.get(n);
-            if (K-nl2.countCommons(nl)>0) {
+            if (K-nl.countCommons(nl2)>0) {
                 System.out.print("node: "+n);
 
                 System.out.println("approximate method: "+nl2);
                 System.out.println("    exhaustive method"+nl);
 
-                System.out.print("differences are: "+(Integer.toString(K-nl.countCommons(nl2)))+"\n");}
+                System.out.print("the differences are: "+(Integer.toString(K-nl.countCommons(nl2)))+"\n");}
 
 
         }
 
+/*
+        System.out.println(graph.search(N1.value, K));
+        System.out.println(graph.searchExhaustive(N1.value, K));
+        System.out.println(online_graph.search(N1.value, K));
+        System.out.println(online_graph.searchExhaustive(N1.value, K));
+
+
+*/
 
 
 
 
 
 
-       //Iterable <Node,NeighborList> nodes_all = online_graph.entrySet();
+
+        //Iterable <Node,NeighborList> nodes_all = online_graph.entrySet();
         //System.out.println("\n this is to nl of the node to be deleted: "+N2del_list);
         //graph.prune(0.30);
         // Display the computed neighbor lists
