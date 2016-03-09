@@ -10,9 +10,14 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Created by fabio on 23/02/16.
- * The same as app2 but here:
+ *
  * - the node with id 0 disappears
- * - more than one nodes are updated
+ * - the neighbourlists are udpated
+ *
+ * Two graphs are created, both online with ignns
+ * one with node 0
+ * one without node 0
+ * then node 0 is deleted from the first graphs
  */
 public class app5_fabio {
     public static int K = 3;
