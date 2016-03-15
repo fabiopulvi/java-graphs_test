@@ -597,7 +597,10 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      */
 
     public NeighborList remove (Node<T> node) {
-        return map.remove(node);
+        NeighborList nl = map.remove(node);
+
+        return nl;
+
     }
 
     /**
@@ -626,7 +629,78 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         }
     }
 
+    /**
+     * remove a node from the graph and update the neighbourlist
+     * deleting the node from the neighbourlists and updating it
+     *
+     * @param node to delete
+     *
+     *  @return number of modified nodes
+     * #Fabio
+     *
+     */
+
+    public int removeAndUpdate_flat (Node<T> node) {
+        int modified=0; //number of nodes modified
+        // array of the nodes to update (out of the scrolling)
+        ArrayList<Node<T>> nodes2update_array = new ArrayList<Node<T>>();
+        //remove the node from all the neighbourlists
+        this.removeNodeFromNeighbourlist(node);
+        //now scroll the nodes and identify which ones has been involved in the deletion
+        for (Node <T> node2update : map.keySet()) {
+            if (map.get(node2update).size()==k-1) nodes2update_array.add(node2update);
+        }
+        //now scroll the nodes and update them
+        for (Node <T> node2update : nodes2update_array) {
+            NeighborList nl = this.search(node2update.value, k);
+            map.put(node2update, nl);
+            modified++;
+        }
+        return modified;
+    }
     /*
+    public void removeAndUpdate_flat (Node<T> node) {
+        //scroll the NLs, this time from the nodes
+        this.remove(node);
+         // array of the nodes to update
+        ArrayList<Node<T>> nodes2update_array = new ArrayList<Node<T>>();
+        for (Node <T> node2update : map.keySet()) {
+
+                //can't do it without scrolling because the nl is composed of neighbors and not node
+                //we would miss the distance measure and the "remove" function would not
+                //find the node
+                boolean flag = false; //this flag signals if the nl has to be updated
+                ArrayList<Neighbor> to_remove = new ArrayList<Neighbor>();
+
+                for (Neighbor n : map.get(node2update)) {
+
+                    if (n.node.equals(node)) {
+                        nodes2update_array.add(node2update);
+                        to_remove.add(n);
+                        System.out.println("\n just found the node: "+n.node+" into the nl of: "+node2update);
+                        flag=true;
+                        break;
+                    }
+                }
+                if (flag==true) {
+                    NeighborList nl = this.search(node2update.value, k);
+                    System.out.println("\n For it just found: "+nl);
+                    map.put(node2update, nl);
+                    System.out.println("\n now its nl is: "+map.get(node2update));
+                }
+
+                // System.out.println("\n looking for:" +node+" it says: "+result+" and the nl is: "+nl);
+
+        }
+        for (Node <T> node2update : nodes2update_array) {
+            NeighborList nl = this.search(node2update.value, k);
+            System.out.println("\n For the node: " + node2update + " just found: " + nl);
+            map.put(node2update, nl);
+            System.out.println("\n now its nl is: " + map.get(node2update));
+        }
+    }
+
+
     public NeighborList removeNodeFromNeighbourlist (Node<T> node) {
         //hashmap of the nodes to update
 

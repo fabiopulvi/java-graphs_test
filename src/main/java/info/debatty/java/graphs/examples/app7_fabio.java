@@ -11,17 +11,28 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by fabio on 23/02/16.
  *
- * Two graphs are created, both online with ignns
+ * Two graphs brute graphs are created
  * one with node 0
  * one without node 0
  * then node 0 is deleted from the first graphs
  * 
  */
 public class app7_fabio {
-    public static int K = 1;
-    public static int count = 10;
+    public static int K = 2;
+    public static int count = 100;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        //create the online graph 1
+        // Generate some random nodes and add them to the graphs
+        Random r = new Random();
+            //create the two arrays of nodes
+        ArrayList<Node> nodes_1 = new ArrayList<Node>(count);
+        ArrayList<Node> nodes_2 = new ArrayList<Node>(count);
+
+        for (int i = 0; i < count; i++) {
+            // The value of our nodes will be an int
+            int value = r.nextInt(100);
+            if (i!=0) nodes_2.add(new Node<Integer>(String.valueOf(i), value));
+            nodes_1.add(new Node<Integer>(String.valueOf(i), value));
+        }
 
         Brute builder_1 = new Brute<Integer>();
         builder_1.setK(K);
@@ -31,9 +42,10 @@ public class app7_fabio {
                 return 1.0 / (1.0 + Math.abs(value1 - value2));
             }
         });
-        ArrayList<Node> nodes_1 = new ArrayList<Node>();
+
         Graph<Integer> graph_1 = builder_1.computeGraph(nodes_1);
         OnlineGraph<Integer> online_graph_1= new OnlineGraph<Integer>(graph_1);
+
 
         //create the online graph 2
 
@@ -45,38 +57,38 @@ public class app7_fabio {
                 return 1.0 / (1.0 + Math.abs(value1 - value2));
             }
         });
-        ArrayList<Node> nodes_2 = new ArrayList<Node>();
+
         Graph<Integer> graph_2 = builder_1.computeGraph(nodes_2);
         OnlineGraph<Integer> online_graph_2= new OnlineGraph<Integer>(graph_2);
-
-
-
-        // Generate some random nodes and add them to the graphs
-        Random r = new Random();
-        for (int i = 0; i < count; i++) {
-            // The value of our nodes will be an in+String.valueOf(i)+" "+ value)t
-            int value = r.nextInt(100);
-            // graph2 does not have the node 0
-           // if (i!=0) {online_graph_2.addNode(new Node<Integer>(String.valueOf(i), value));}
-            //if (i==0) {System.out.println("\n The node that only graph 1 has, is: "+String.valueOf(i)+" "+ value);}
-            online_graph_2.addNode(new Node<Integer>(String.valueOf(i), value));
-            System.out.println("Just added to graph1 node: "+String.valueOf(i)+" "+ value);
-            online_graph_1.addNode(new Node<Integer>(String.valueOf(i), value));
-
+        //find the node0 info and delete it
+        Node <Integer> N0 = null;
+        NeighborList N0_list = null;
+        for (Node <Integer> n : online_graph_1.getNodes()) {
+            if (Integer.parseInt(n.id)==0) {
+                N0 = new Node<Integer>(n.id, n.value);
+                N0_list = online_graph_1.get(n);
+            }
         }
+        System.out.println("\n the node to delete is N0: "+N0);
+
+        online_graph_1.remove(N0);
+        //online_graph_1.removeNodeFromNeighbourlist(N0);
+        online_graph_1.removeAndUpdate_flat(N0);
+
+
 
         // Iterate the nodes to see the differences
         for (Node n : online_graph_2.getNodes()) {
             NeighborList nl1 = online_graph_1.get(n);
             NeighborList nl2 = online_graph_2.get(n);
-        //    if (K-nl1.countCommons(nl2)>0) {
+            if (K-nl1.countCommons(nl2)>0) {
                 System.out.print("\n node: "+n);
 
-                System.out.println("\n approximate graph: "+nl1);
-                System.out.println("approximate graph: "+nl2);
+                System.out.println("\n updated graph: "+nl1);
+                System.out.println("brute graph: "+nl2);
 
                 System.out.print("the differences are: "+(Integer.toString(K-nl1.countCommons(nl2)))+"\n");
-            //}
+            }
 
 
         }

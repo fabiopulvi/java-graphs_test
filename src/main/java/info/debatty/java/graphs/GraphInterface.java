@@ -62,6 +62,8 @@ public interface GraphInterface<T> {
 
     void removeNodeFromNeighbourlist ( Node<T> node);
 
+    int removeAndUpdate_flat (Node<T> node);
+
     public Iterable<Node<T>> getNodes();
 
     SimilarityInterface<T> getSimilarity();
