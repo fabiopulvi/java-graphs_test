@@ -709,6 +709,20 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
 
             }
             System.out.println("this is the compatible candidates for node "+node2update+ ": "+candidatesNeighbours_array);
+            Node<T> node_higher_similarity = null;
+            double higher_similarity=0;
+            for (Node<T> n2: candidatesNeighbours_array )
+            {
+                double sim = similarity.similarity(
+                        n2.value,
+                        node2update.value);
+                if (sim>higher_similarity) {
+                    node_higher_similarity = n2;
+                    higher_similarity = sim;
+                }
+            }
+            System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
+
             //else to the usual ignns
             NeighborList nl = this.search(node2update.value, k);
             map.put(node2update, nl);
