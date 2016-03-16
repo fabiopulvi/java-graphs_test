@@ -15,16 +15,16 @@ import java.util.concurrent.ExecutionException;
  * one with node 0
  * one without node 0
  * then node 0 is deleted from the first graphs
- * STRATEGY 1
+ *
  *
  * delivered a result with a conf of k=4, 1000 nodes and values up to 10000
  * of 5.05 wrong nodes
  * 
  */
-public class app8_fabio {
-    public static int K = 4;
-    public static int count = 1000;
-    public static int iterations=100;
+public class app9_fabio {
+    public static int K = 5;
+    public static int count = 100;
+    public static int iterations=1;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ArrayList<Integer> errors = new ArrayList<Integer>();
         for (int a = 0; a < iterations; a++) {
@@ -78,9 +78,9 @@ public class app8_fabio {
             }
           //  System.out.println("\n the node to delete is N0: " + N0);
 
-            online_graph_1.remove(N0);
+
             //online_graph_1.removeNodeFromNeighbourlist(N0);
-            int modified_nodes = online_graph_1.removeAndUpdate_flat(N0);
+            int modified_nodes = online_graph_1.removeAndUpdate_2(N0);
 
             int wrong_edge = 0;
 
@@ -90,12 +90,12 @@ public class app8_fabio {
                 NeighborList nl2 = online_graph_2.get(n);
                 int node_wrong_edges = K - nl1.countCommons(nl2);
                 if (node_wrong_edges > 0) {
-                  //  System.out.print("\n node: " + n);
+                    System.out.print("\n node: " + n);
 
-                   // System.out.println("\n updated graph: " + nl1);
-                   // System.out.println("brute graph: " + nl2);
+                    System.out.println("\n updated graph: " + nl1);
+                    System.out.println("brute graph: " + nl2);
 
-                   // System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
+                    System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
                 }
                 wrong_edge += node_wrong_edges;
 
