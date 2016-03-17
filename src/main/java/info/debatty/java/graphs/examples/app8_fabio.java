@@ -17,8 +17,19 @@ import java.util.concurrent.ExecutionException;
  * then node 0 is deleted from the first graphs
  * STRATEGY 1
  *
- * delivered a result with a conf of k=4, 1000 nodes and values up to 10000
- * of 5.05 wrong nodes
+ in the average the differences are 5.61
+ the modified edges are 16.28
+ the correct edges are 3994.39
+
+ in the average the differences are 5.26
+ the modified edges are 16.4
+ the correct edges are 3994.74
+
+
+ in the average the differences are 4.75
+ the modified edges are 15.08
+ the correct edges are 3995.25
+
  * 
  */
 public class app8_fabio {
@@ -27,6 +38,7 @@ public class app8_fabio {
     public static int iterations=100;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ArrayList<Integer> errors = new ArrayList<Integer>();
+        ArrayList<Integer> modified_edges = new ArrayList<Integer>();
         for (int a = 0; a < iterations; a++) {
             // Generate some random nodes and add them to the graphs
             Random r = new Random();
@@ -80,8 +92,8 @@ public class app8_fabio {
 
             online_graph_1.remove(N0);
             //online_graph_1.removeNodeFromNeighbourlist(N0);
-            int modified_nodes = online_graph_1.removeAndUpdate_flat(N0);
-
+            int node_modified_edges = online_graph_1.removeAndUpdate_flat(N0);
+            modified_edges.add(node_modified_edges);
             int wrong_edge = 0;
 
             // Iterate the nodes to see the differences
@@ -108,10 +120,14 @@ public class app8_fabio {
         }
         System.out.print("the wrong edges are: " + errors+ "\n");
         int sum=0;
+        int sum_modified=0;
         for (int a: errors) sum+=a;
+        for (int a: modified_edges) sum_modified+=a;
         double avg= (double) sum / errors.size();
+        double avg_modified= (double) sum_modified / modified_edges.size();
         double correct_edges_all= (double) K*count;
-        System.out.print("in the average they are " + avg+ "\n");
+        System.out.print("in the average the differences are " + avg+ "\n");
+        System.out.print("the modified edges are " + avg_modified+ "\n");
         System.out.print("the correct edges are " + Double.toString(correct_edges_all-avg)+ "\n");
 
     }

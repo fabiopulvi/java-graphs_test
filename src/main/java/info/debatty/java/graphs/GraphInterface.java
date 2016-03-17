@@ -66,6 +66,8 @@ public interface GraphInterface<T> {
 
     int removeAndUpdate_2 (Node<T> node);
 
+    int removeAndUpdate_3 (Node<T> node);
+
     public Iterable<Node<T>> getNodes();
 
     SimilarityInterface<T> getSimilarity();

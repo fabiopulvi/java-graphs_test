@@ -10,7 +10,8 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Created by fabio on 23/02/16.
- *STRATEGY 2
+ *
+ * STRATEGY 3
  * Two graphs brute graphs are created
  * one with node 0
  * one without node 0
@@ -18,23 +19,21 @@ import java.util.concurrent.ExecutionException;
  *
  *
  * delivered a result with a conf of k=4, 1000 nodes and values up to 10000
- *
- * in the average the differences are 2.6
- the modified edges are 8.55
- the correct edges are 3997.4
+ *in the average the differences are 2.18
+ the modified edges are 5.5
+ the correct edges are 3997.82
 
- in the average the differences are 2.79
- the modified edges are 7.99
- the correct edges are 3997.21
+ in the average the differences are 2.52
+ the modified edges are 6.45
+ the correct edges are 3997.48
 
- in the average the differences are 2.79
- the modified edges are 8.23
- the correct edges are 3997.21
-
+ in the average the differences are 2.16
+ the modified edges are 5.97
+ the correct edges are 3997.84
  *
  * 
  */
-public class app9_fabio {
+public class app10_fabio {
     public static int K = 4;
     public static int count = 1000;
     public static int iterations=100;
@@ -94,7 +93,7 @@ public class app9_fabio {
 
 
             //online_graph_1.removeNodeFromNeighbourlist(N0);
-            int node_modified_edges = online_graph_1.removeAndUpdate_2(N0);
+            int node_modified_edges = online_graph_1.removeAndUpdate_3(N0);
             modified_edges.add(node_modified_edges);
             int wrong_edge = 0;
 
