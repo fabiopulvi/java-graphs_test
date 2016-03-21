@@ -629,10 +629,17 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         }
     }
 
+
+
+
+
+
+
     /**
      * Strategy number 1.
      * remove a node from the graph and update the neighbourlist
      * deleting the node from the neighbourlists and updating it.
+     * The update is done with a new ignns search
      *
      *
      * @param node to delete
@@ -669,7 +676,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * deleting the node from the neighbourlists and updating it.
      * In this case, the update of each node n is done through:
      * -analyzing the nl of the node to delete (call it n2d)
-     * -add the closest node to the nl of node n in place of n2d
+     * -for each node to update, select, among the neighbours of n2d, add the closest node to the nl of node n in place of n2d
      * -if none of the nodes is available, obtain a new nl for n with ignns search
      *
      *
