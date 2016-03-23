@@ -65,8 +65,11 @@ public interface GraphInterface<T> {
     int removeAndUpdate_flat (Node<T> node);
 
     int removeAndUpdate_2 (Node<T> node);
+    int removeAndUpdate_2_depth (Node<T> node, int depth);
+
 
     int removeAndUpdate_3 (Node<T> node);
+    int removeAndUpdate_3_depth (Node<T> node, int depth);
 
     public Iterable<Node<T>> getNodes();
 

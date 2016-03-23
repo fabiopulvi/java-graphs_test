@@ -299,14 +299,15 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             this.lowlink = lowlink;
             this.onstack = true;
         }
-    };
+    }
+
+    ;
 
     public Iterable<Node<T>> getNodes() {
         return map.keySet();
     }
 
     /**
-     *
      * @param query
      * @param K
      * @return
@@ -347,11 +348,11 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * Graph Building" by Debatty et al.
      * Default speedup is 4.
      *
+     * @param query
+     * @param k     search K neighbors
+     * @return
      * @see <a href="http://arxiv.org/abs/1602.06819">Fast Online k-nn Graph
      * Building</a>
-     * @param query
-     * @param k search K neighbors
-     * @return
      */
     @Override
     public final NeighborList search(final T query, final int k) {
@@ -362,12 +363,12 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * Approximate fast graph based search, as published in "Fast Online k-nn
      * Graph Building" by Debatty et al.
      *
-     * @see <a href="http://arxiv.org/abs/1602.06819">Fast Online k-nn Graph
-     * Building</a>
      * @param query
-     * @param k search k neighbors
+     * @param k       search k neighbors
      * @param speedup speedup for searching (> 1, default 4)
      * @return
+     * @see <a href="http://arxiv.org/abs/1602.06819">Fast Online k-nn Graph
+     * Building</a>
      */
     @Override
     public final NeighborList search(
@@ -380,14 +381,13 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * Approximate fast graph based search, as published in "Fast Online k-nn
      * Graph Building" by Debatty et al.
      *
+     * @param query     query point
+     * @param k         number of neighbors to find (the K from K-nn search)
+     * @param speedup   (default: 4)
+     * @param expansion (default: 1.2)
+     * @return
      * @see <a href="http://arxiv.org/abs/1602.06819">Fast Online k-nn Graph
      * Building</a>
-     * @param query query point
-     * @param k number of neighbors to find (the K from K-nn search)
-     * @param speedup (default: 4)
-     * @param expansion (default: 1.2)
-     *
-     * @return
      */
     @Override
     public final NeighborList search(
@@ -592,11 +592,12 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
 
     /**
      * remove a node from the graph
+     *
      * @param node to delete
-     * #Fabio
+     *             #Fabio
      */
 
-    public NeighborList remove (Node<T> node) {
+    public NeighborList remove(Node<T> node) {
         NeighborList nl = map.remove(node);
 
         return nl;
@@ -608,31 +609,26 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * deleting the node from the neighbourlists without updating it
      *
      * @param node to delete
-     * #Fabio
+     *             #Fabio
      */
 
-    public void removeNodeFromNeighbourlist (Node<T> node) {
+    public void removeNodeFromNeighbourlist(Node<T> node) {
         //scroll the NLs
         for (NeighborList nl : map.values()) {
             //can't do it without scrolling because the nl is composed of neighbors and not node
             //we would miss the distance measure and the "remove" function would not
             //find the node
-        ArrayList<Neighbor> to_remove = new ArrayList<Neighbor>();
-        for (Neighbor n : nl) {
-            if (n.node.equals(node)) {
-                to_remove.add(n);
+            ArrayList<Neighbor> to_remove = new ArrayList<Neighbor>();
+            for (Neighbor n : nl) {
+                if (n.node.equals(node)) {
+                    to_remove.add(n);
+                }
             }
-        }
 
-            boolean result= nl.removeAll(to_remove);
-           // System.out.println("\n looking for:" +node+" it says: "+result+" and the nl is: "+nl);
+            boolean result = nl.removeAll(to_remove);
+            // System.out.println("\n looking for:" +node+" it says: "+result+" and the nl is: "+nl);
         }
     }
-
-
-
-
-
 
 
     /**
@@ -641,30 +637,27 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * deleting the node from the neighbourlists and updating it.
      * The update is done with a new ignns search
      *
-     *
      * @param node to delete
-     *
-     *  @return number of modified nodes
+     * @return number of modified nodes
      * #Fabio
-     *
      */
 
-    public int removeAndUpdate_flat (Node<T> node) {
+    public int removeAndUpdate_flat(Node<T> node) {
         this.remove(node);
-        int modified=0; //number of nodes modified
+        int modified = 0; //number of nodes modified
         // array of the nodes to update (out of the scrolling)
         ArrayList<Node<T>> nodes2update_array = new ArrayList<Node<T>>();
         //remove the node from all the neighbourlists
         this.removeNodeFromNeighbourlist(node);
         //now scroll the nodes and identify which ones has been involved in the deletion
-        for (Node <T> node2update : map.keySet()) {
-            if (map.get(node2update).size()==k-1) nodes2update_array.add(node2update);
+        for (Node<T> node2update : map.keySet()) {
+            if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
         }
         //now scroll the nodes and update them
-        for (Node <T> node2update : nodes2update_array) {
+        for (Node<T> node2update : nodes2update_array) {
             NeighborList nl = this.search(node2update.value, k);
             map.put(node2update, nl);
-            modified+=k;
+            modified += k;
         }
         return modified;
     }
@@ -679,16 +672,13 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * -for each node to update, select, among the neighbours of n2d, add the closest node to the nl of node n in place of n2d
      * -if none of the nodes is available, obtain a new nl for n with ignns search
      *
-     *
      * @param node to delete
-     *
-     *  @return number of modified edges
+     * @return number of modified edges
      * #Fabio
-     *
      */
 
-    public int removeAndUpdate_2 (Node<T> node) {
-        int modified=0; //number of nodes modified
+    public int removeAndUpdate_2(Node<T> node) {
+        int modified = 0; //number of nodes modified
         NeighborList nl2d = map.get(node);
         //System.out.println("this is the the node to delete"+node);
         //System.out.println("this is the nl of the node to delete"+nl2d);
@@ -698,42 +688,42 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         //remove the node from all the neighbourlists
         this.removeNodeFromNeighbourlist(node);
         //now scroll the nodes and identify which ones has been involved in the deletion
-        for (Node <T> node2update : map.keySet()) {             //this can be obtained in the method removeNodeFromNeighbourlist TO DO
-            if (map.get(node2update).size()==k-1) nodes2update_array.add(node2update);
+        for (Node<T> node2update : map.keySet()) {             //this can be obtained in the method removeNodeFromNeighbourlist TO DO
+            if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
         }
         //now scroll the nodes and update them
-        for (Node <T> node2update : nodes2update_array) {
+        for (Node<T> node2update : nodes2update_array) {
             //first try to find an available node from nl
             ArrayList<Node<T>> candidatesNeighbours_array = new ArrayList<Node<T>>();
             ArrayList<Node<T>> nl2update_array = new ArrayList<Node<T>>();
             NeighborList oldNl = map.get(node2update);
-            boolean found=false;
+            boolean found = false;
             for (Neighbor n2 : oldNl) {
                 nl2update_array.add(n2.node);
             }
             //System.out.println("For the node: "+node2update+ " the neighbourlist to update is: "+nl2update_array);
             for (Neighbor n : nl2d) {
-                if ((!n.node.equals(node2update))&&(!nl2update_array.contains(n.node))) candidatesNeighbours_array.add(n.node);
+                if ((!n.node.equals(node2update)) && (!nl2update_array.contains(n.node)))
+                    candidatesNeighbours_array.add(n.node);
 
             }
-         //   System.out.println("this is the compatible candidates for node "+node2update+ ": "+candidatesNeighbours_array);
-           // System.out.println("this was its nl"+map.get(node2update));
+            //   System.out.println("this is the compatible candidates for node "+node2update+ ": "+candidatesNeighbours_array);
+            // System.out.println("this was its nl"+map.get(node2update));
             Node<T> node_higher_similarity = null;
-            double higher_similarity=0;
-            for (Node<T> n2: candidatesNeighbours_array )
-            {
-                found=true;
+            double higher_similarity = 0;
+            for (Node<T> n2 : candidatesNeighbours_array) {
+                found = true;
                 double sim = similarity.similarity(
                         n2.value,
                         node2update.value);
-                if (sim>higher_similarity) {
+                if (sim > higher_similarity) {
                     node_higher_similarity = n2;
                     higher_similarity = sim;
                 }
             }
             // no nodes are available. Do the search!
-           // System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
-            if(found==true) {
+            // System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
+            if (found == true) {
                 oldNl.add(new Neighbor(
                         node_higher_similarity,
                         higher_similarity));
@@ -744,12 +734,114 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             else {
                 NeighborList nl = this.search(node2update.value, k);
                 map.put(node2update, nl);
-                modified+=k;  //all the edges have been modified: thay can be still the same but they have been reobtained
+                modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
             }
         }
         return modified;
     }
 
+
+    /**
+     * Strategy number 2 + depth.
+     * remove a node from the graph and update the neighbourlist
+     * deleting the node from the neighbourlists and updating it.
+     * In this case, the update of each node n is done through:
+     * -analyzing the nl of the node to delete (call it n2d), and analyze their neighbourlist up to a certain depth "depth"
+     * -for each node to update, select, among the neighbours of n2d, add the closest node to the nl of node n in place of n2d
+     * -if none of the nodes is available, obtain a new nl for n with ignns search
+     *
+     * @param node to delete
+     * @return number of modified edges
+     * #Fabio
+     */
+
+    public int removeAndUpdate_2_depth(Node<T> node, int depth) {
+        int modified = 0; //number of nodes modified
+        int iter = 1;
+        ArrayList<Node<T>> candidates = new ArrayList<Node<T>>();
+        ArrayList<Node<T>> nodes_to_check = new ArrayList<Node<T>>();
+        nodes_to_check.add(node); //first add the node to delete
+        NeighborList nl2d = map.get(node);
+        while (iter <= depth) {
+            ArrayList<Node<T>> nodes_to_add = new ArrayList<Node<T>>();
+            ArrayList<Node<T>> nodes_to_del = new ArrayList<Node<T>>();
+            for (Node<T> n2chk : nodes_to_check) {
+                nodes_to_del.add(n2chk);
+                for (Neighbor n : map.get(n2chk)) {
+                    if ((!n.node.equals(node)) && (!candidates.contains(n.node))) {
+                        candidates.add(n.node);
+                        nodes_to_add.add(n.node);
+                    }
+
+                }
+            }
+            iter++;
+            nodes_to_check.addAll(nodes_to_add);
+            nodes_to_check.removeAll(nodes_to_del);
+        }
+        // System.out.println("this is the the node to delete"+node);
+        ///System.out.println("this is the nl of the node to delete"+nl2d);
+
+        //System.out.println("this is the set of candidates"+candidates);
+        this.remove(node);
+        // array of the nodes to update (out of the scrolling)
+        ArrayList<Node<T>> nodes2update_array = new ArrayList<Node<T>>();
+        //remove the node from all the neighbourlists
+        this.removeNodeFromNeighbourlist(node);
+        //now scroll the nodes and identify which ones has been involved in the deletion
+        for (Node<T> node2update : map.keySet()) {             //this can be obtained in the method removeNodeFromNeighbourlist TO DO
+            if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
+        }
+        //now scroll the nodes and update them
+        for (Node<T> node2update : nodes2update_array) {
+            //first try to find an available node from nl
+            ArrayList<Node<T>> candidatesNeighbours_array = new ArrayList<Node<T>>();
+            ArrayList<Node<T>> nl2update_array = new ArrayList<Node<T>>();
+            NeighborList oldNl = map.get(node2update);
+            boolean found = false;
+            for (Neighbor n2 : oldNl) {
+                nl2update_array.add(n2.node);
+            }
+            //System.out.println("For the node: "+node2update+ " the neighbourlist to update is: "+nl2update_array);
+            //for (Neighbor n : nl2d) {
+            //  if ((!n.node.equals(node2update))&&(!nl2update_array.contains(n.node))) candidatesNeighbours_array.add(n.node);
+
+            //}
+            //System.out.println("this is the all candidates for node "+node2update+ ": "+candidates);
+            // System.out.println("this was its nl"+map.get(node2update));
+            Node<T> node_higher_similarity = null;
+            double higher_similarity = 0;
+            for (Node<T> n2 : candidates) {
+                if ((!n2.equals(node2update)) && (!nl2update_array.contains(n2))) {
+                    found = true;
+                    double sim = similarity.similarity(
+                            n2.value,
+                            node2update.value);
+                    if (sim > higher_similarity) {
+                        node_higher_similarity = n2;
+                        higher_similarity = sim;
+                    }
+                }
+            }
+            // no nodes are available. Do the search!
+            //System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
+            if (found == true) {
+                oldNl.add(new Neighbor(
+                        node_higher_similarity,
+                        higher_similarity));
+                modified++;  //modified only 1 edge
+
+            }
+            //else to the usual ignns
+            else {
+              //  System.out.println("\n unfortunately, none of them was available");
+                NeighborList nl = this.search(node2update.value, k);
+                map.put(node2update, nl);
+                modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
+            }
+        }
+        return modified;
+    }
 
 
     /**
@@ -762,17 +854,14 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * -add the closest node to the nl of node n in place of n2d
      * -if none of the nodes is available, obtain a new nl for n with ignns search
      *
-     *
      * @param node to delete
-     *
-     *  @return number of modified nodes
+     * @return number of modified nodes
      * #Fabio
-     *
      */
 
 
-    public int removeAndUpdate_3 (Node<T> node) {
-        int modified=0; //number of nodes modified
+    public int removeAndUpdate_3(Node<T> node) {
+        int modified = 0; //number of nodes modified
         NeighborList nl2d = map.get(node);
         //System.out.println("this is the the node to delete"+node);
         //System.out.println("this is the nl of the node to delete"+nl2d);
@@ -782,17 +871,17 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         //remove the node from all the neighbourlists
         this.removeNodeFromNeighbourlist(node);
         //now scroll the nodes and identify which ones has been involved in the deletion
-        for (Node <T> node2update : map.keySet()) {             //this can be obtained in the method removeNodeFromNeighbourlist TO DO
-            if (map.get(node2update).size()==k-1) nodes2update_array.add(node2update);
+        for (Node<T> node2update : map.keySet()) {             //this can be obtained in the method removeNodeFromNeighbourlist TO DO
+            if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
         }
         ArrayList<Node<T>> nodes2update_array_copy = nodes2update_array;
         //now scroll the nodes and update them
-        for (Node <T> node2update : nodes2update_array) {
+        for (Node<T> node2update : nodes2update_array) {
             //first try to find an available node from nl
             ArrayList<Node<T>> candidatesNeighbours_array = new ArrayList<Node<T>>();
             ArrayList<Node<T>> nl2update_array = new ArrayList<Node<T>>();
             NeighborList oldNl = map.get(node2update);
-            boolean found=false;
+            boolean found = false;
             for (Neighbor n2 : oldNl) {
                 nl2update_array.add(n2.node);
             }
@@ -802,35 +891,35 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             //1. not to be the node itself
             //2. not already being in its nl
             for (Neighbor n : nl2d) {
-                if ((!n.node.equals(node2update))&&(!nl2update_array.contains(n.node))) candidatesNeighbours_array.add(n.node);
+                if ((!n.node.equals(node2update)) && (!nl2update_array.contains(n.node)))
+                    candidatesNeighbours_array.add(n.node);
             }
             //analyze the nodes to update (they should be closer to the node to the delete)
             // two conditions to be a candidate:
             //1. not to be the node itself
             //2. not already being in its nl
 
-            for (Node n: nodes2update_array_copy ) {
-                if ((!n.equals(node2update))&&(!nl2update_array.contains(n)))
-                    if (!candidatesNeighbours_array.contains(n))candidatesNeighbours_array.add(n);
+            for (Node n : nodes2update_array_copy) {
+                if ((!n.equals(node2update)) && (!nl2update_array.contains(n)))
+                    if (!candidatesNeighbours_array.contains(n)) candidatesNeighbours_array.add(n);
             }
-               //System.out.println("this is the compatible candidates for node "+node2update+ ": "+candidatesNeighbours_array);
+            //System.out.println("this is the compatible candidates for node "+node2update+ ": "+candidatesNeighbours_array);
             // System.out.println("this was its nl"+map.get(node2update));
             Node<T> node_higher_similarity = null;
-            double higher_similarity=0;
-            for (Node<T> n2: candidatesNeighbours_array )
-            {
-                found=true;
+            double higher_similarity = 0;
+            for (Node<T> n2 : candidatesNeighbours_array) {
+                found = true;
                 double sim = similarity.similarity(
                         n2.value,
                         node2update.value);
-                if (sim>higher_similarity) {
+                if (sim > higher_similarity) {
                     node_higher_similarity = n2;
                     higher_similarity = sim;
                 }
             }
             // no nodes are available. Do the search!
             // System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
-            if(found==true) {
+            if (found == true) {
                 oldNl.add(new Neighbor(
                         node_higher_similarity,
                         higher_similarity));
@@ -841,10 +930,156 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             else {
                 NeighborList nl = this.search(node2update.value, k);
                 map.put(node2update, nl);
-                modified+=k;  //all the edges have been modified: thay can be still the same but they have been reobtained
+                modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
             }
         }
         return modified;
     }
+
+
+    /**
+     * Strategy number 3w ith depth
+     * remove a node from the graph and update the neighbourlist
+     * deleting the node from the neighbourlists and updating it.
+     * In this case, the update of each node n is done through:
+     * -analyzing the nl of the node to delete (call it n2d)
+     * -(difference from strategy 2) analyzing all the other nodes that have been modified by the deletion of the node n2d
+     * -add the closest node to the nl of node n in place of n2d
+     * -if none of the nodes is available, obtain a new nl for n with ignns search
+     *
+     * @param node to delete
+     * @return number of modified nodes
+     * #Fabio
+     */
+
+
+    public int removeAndUpdate_3_depth(Node<T> node, int depth) {
+        int modified = 0; //number of nodes modified
+        int iter = 1;
+        ArrayList<Node<T>> candidates = new ArrayList<Node<T>>();
+        ArrayList<Node<T>> nodes_to_check = new ArrayList<Node<T>>();
+        nodes_to_check.add(node); //first add the node to delete
+        NeighborList nl2d = map.get(node);
+        while (iter <= depth) {
+            ArrayList<Node<T>> nodes_to_add = new ArrayList<Node<T>>();
+            ArrayList<Node<T>> nodes_to_del = new ArrayList<Node<T>>();
+            for (Node<T> n2chk : nodes_to_check) {
+                nodes_to_del.add(n2chk);
+                for (Neighbor n : map.get(n2chk)) {
+                    if ((!n.node.equals(node)) && (!candidates.contains(n.node))) {
+                        candidates.add(n.node);
+                        nodes_to_add.add(n.node);
+                    }
+
+                }
+            }
+            iter++;
+            nodes_to_check.addAll(nodes_to_add);
+            nodes_to_check.removeAll(nodes_to_del);
+        }
+
+
+        this.remove(node);
+        // array of the nodes to update (out of the scrolling)
+        ArrayList<Node<T>> nodes2update_array = new ArrayList<Node<T>>();
+        //remove the node from all the neighbourlists
+        this.removeNodeFromNeighbourlist(node);
+        //now scroll the nodes and identify which ones has been involved in the deletion
+        for (Node<T> node2update : map.keySet()) {             //this can be obtained in the method removeNodeFromNeighbourlist TO DO
+            if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
+        }
+
+      //  System.out.println("this is the  node to delete"+node);
+       // System.out.println("this is the nl of the node to delete"+nl2d);
+       // System.out.println("this is the set of nodes to update"+nodes2update_array);
+        nodes_to_check.clear();
+        nodes_to_check.addAll(nodes2update_array);
+     //   System.out.println("These were its neighbours: ");
+      //  for (Neighbor neigh : map.get(node)) {
+      //      System.out.println("neighbours: "+neigh.node+" "+map.get(neigh.node));
+      //  }
+        //System.out.println("this is the set of candidates"+candidates);
+        for (Node<T> n2chk : nodes_to_check) {
+            if (!candidates.contains(n2chk)) {
+                candidates.add(n2chk);
+            }
+        }
+        iter = 2;
+        while (iter <= depth) {
+            ArrayList<Node<T>> nodes_to_add = new ArrayList<Node<T>>();
+            ArrayList<Node<T>> nodes_to_del = new ArrayList<Node<T>>();
+            for (Node<T> n2chk : nodes_to_check) {
+                nodes_to_del.add(n2chk);
+                for (Neighbor n : map.get(n2chk)) {
+                    if ((!n.node.equals(node)) && (!candidates.contains(n.node))) {
+                        candidates.add(n.node);
+                        nodes_to_add.add(n.node);
+                    }
+
+                }
+            }
+            iter++;
+            nodes_to_check.addAll(nodes_to_add);
+            nodes_to_check.removeAll(nodes_to_del);
+        }
+       // System.out.println("These were the node to update and their neighbours: ");
+        //for (Node<T> nodes : nodes2update_array) {
+
+          //  System.out.println("neighbours: "+nodes+" "+map.get(nodes));
+
+       // }
+
+        //System.out.println("this is the set of candidates"+candidates);
+
+        for (Node<T> node2update : nodes2update_array) {
+            //first try to find an available node from nl
+            ArrayList<Node<T>> candidatesNeighbours_array = new ArrayList<Node<T>>();
+            ArrayList<Node<T>> nl2update_array = new ArrayList<Node<T>>();
+            NeighborList oldNl = map.get(node2update);
+            boolean found = false;
+            for (Neighbor n2 : oldNl) {
+                nl2update_array.add(n2.node);
+            }
+            //System.out.println("For the node: "+node2update+ " the neighbourlist to update is: "+nl2update_array);
+            //for (Neighbor n : nl2d) {
+            //  if ((!n.node.equals(node2update))&&(!nl2update_array.contains(n.node))) candidatesNeighbours_array.add(n.node);
+
+            //}
+            //System.out.println("this is the all candidates for node "+node2update+ ": "+candidates);
+            // System.out.println("this was its nl"+map.get(node2update));
+            Node<T> node_higher_similarity = null;
+            double higher_similarity = 0;
+            for (Node<T> n2 : candidates) {
+                if ((!n2.equals(node2update)) && (!nl2update_array.contains(n2))) {
+                    found = true;
+                    double sim = similarity.similarity(
+                            n2.value,
+                            node2update.value);
+                    if (sim > higher_similarity) {
+                        node_higher_similarity = n2;
+                        higher_similarity = sim;
+                    }
+                }
+            }
+            // no nodes are available. Do the search!
+            //System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
+            if (found == true) {
+                oldNl.add(new Neighbor(
+                        node_higher_similarity,
+                        higher_similarity));
+                modified++;  //modified only 1 edge
+
+            }
+            //else to the usual ignns
+            else {
+              //  System.out.println("\n unfortunately, none of them was available");
+                NeighborList nl = this.search(node2update.value, k);
+                map.put(node2update, nl);
+                modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
+            }
+        }
+        return modified;
+    }
+
 
 }
