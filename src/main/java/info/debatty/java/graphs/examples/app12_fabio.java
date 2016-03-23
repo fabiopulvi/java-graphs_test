@@ -181,12 +181,13 @@ import java.util.concurrent.ExecutionException;
 public class app12_fabio {
     public static int K = 4;
     public static int count = 1000;
-    public static int iterations=1000;
-    public static int run=15;
+    public static int iterations=1;
+    public static int run=1;
     public static int depth=3;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ArrayList<Integer> errors = new ArrayList<Integer>();
         ArrayList<Integer> modified_edges = new ArrayList<Integer>();
+        ArrayList<Integer> comparisons = new ArrayList<Integer>();
         for (int b = 0; b < run; b++) {
             for (int a = 0; a < iterations; a++) {
                 // Generate some random nodes and add them to the graphs
@@ -241,8 +242,8 @@ public class app12_fabio {
 
 
                 //online_graph_1.removeNodeFromNeighbourlist(N0);
-                int node_modified_edges = online_graph_1.removeAndUpdate_3_depth(N0, depth);
-                modified_edges.add(node_modified_edges);
+                int node_comparisons = online_graph_1.removeAndUpdate_3_depth(N0, depth);
+                comparisons.add(node_comparisons);
                 int wrong_edge = 0;
 
                 // Iterate the nodes to see the differences
@@ -269,16 +270,17 @@ public class app12_fabio {
             }
             System.out.print("the wrong edges are: " + errors + "\n");
             int sum = 0;
-            int sum_modified = 0;
+            int sum_comparisons = 0;
             for (int a : errors) sum += a;
-            for (int a : modified_edges) sum_modified += a;
+            for (int a : comparisons) sum_comparisons += a;
             double avg = (double) sum / errors.size();
-            double avg_modified = (double) sum_modified / modified_edges.size();
+            double avg_comparisons = (double) sum_comparisons / comparisons.size();
             double correct_edges_all = (double) K * count;
             System.out.print("in the average the differences are " + avg + "\n");
-            System.out.print("the modified edges are " + avg_modified + "\n");
+
             System.out.print("the correct edges are " + Double.toString(correct_edges_all - avg) + "\n");
             System.out.print("the Q is " + Double.toString(1 - avg / K) + "\n");
+            System.out.print("the comparisons were in avg " + avg_comparisons+ "\n");
             if (b%3==0) depth++;}
 
     }

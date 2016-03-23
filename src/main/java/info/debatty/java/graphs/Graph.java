@@ -948,7 +948,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * -if none of the nodes is available, obtain a new nl for n with ignns search
      *
      * @param node to delete
-     * @return number of modified nodes
+     * @return number of comparisons
      * #Fabio
      */
 
@@ -956,6 +956,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
     public int removeAndUpdate_3_depth(Node<T> node, int depth) {
         int modified = 0; //number of nodes modified
         int iter = 1;
+        int comparisons=0;
         ArrayList<Node<T>> candidates = new ArrayList<Node<T>>();
         ArrayList<Node<T>> nodes_to_check = new ArrayList<Node<T>>();
         nodes_to_check.add(node); //first add the node to delete
@@ -1061,6 +1062,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
                     }
                 }
             }
+            comparisons+=candidates.size();
             // no nodes are available. Do the search!
             //System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
             if (found == true) {
@@ -1078,7 +1080,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
                 modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
             }
         }
-        return modified;
+        return comparisons;
     }
 
 
