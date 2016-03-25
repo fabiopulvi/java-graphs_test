@@ -181,9 +181,9 @@ import java.util.concurrent.ExecutionException;
 public class app12_fabio {
     public static int K = 4;
     public static int count = 1000;
-    public static int iterations=1;
-    public static int run=1;
-    public static int depth=3;
+    public static int iterations=1000;
+    public static int run=6;
+    public static int depth=1;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ArrayList<Integer> errors = new ArrayList<Integer>();
         ArrayList<Integer> modified_edges = new ArrayList<Integer>();

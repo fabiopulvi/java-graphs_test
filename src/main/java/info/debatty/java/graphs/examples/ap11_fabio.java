@@ -149,8 +149,8 @@ public class ap11_fabio {
     public static int K = 4;
     public static int count = 1000;
     public static int iterations=1000;
-    public static int run=15;
-    public static int depth=3;
+    public static int run=21;
+    public static int depth=1;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ArrayList<Integer> errors = new ArrayList<Integer>();
         ArrayList<Integer> comparisons = new ArrayList<Integer>();
