@@ -152,10 +152,11 @@ public class ap11_fabio {
     public static int run=21;
     public static int depth=1;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        ArrayList<Integer> errors = new ArrayList<Integer>();
-        ArrayList<Integer> comparisons = new ArrayList<Integer>();
-        for (int b = 0; b < run; b++) {
-        for (int a = 0; a < iterations; a++) {
+
+        for (int b = 1; b <= run; b++) {
+            ArrayList<Integer> errors = new ArrayList<Integer>();
+            ArrayList<Integer> comparisons = new ArrayList<Integer>();
+            for (int a = 0; a < iterations; a++) {
             // Generate some random nodes and add them to the graphs
             Random r = new Random();
             //create the two arrays of nodes
