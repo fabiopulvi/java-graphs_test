@@ -114,9 +114,9 @@ public class app13 {
                     errors_trend_single.add(wrong_edge);
                     q_trend_single.add(q);
                 } }
-                    System.out.print("the wrong edges are: " + errors_trend_single + "\n");
+                  //  System.out.print("the wrong edges are: " + errors_trend_single + "\n");
                 errors_trend_global.add(errors_trend_single);
-                System.out.print("the wrong q is: " + q_trend_single + "\n");
+                //System.out.print("the wrong q is: " + q_trend_single + "\n");
                     int sum = 0;
                     int sum_comparisons = 0;
                     for (int c : errors) sum += c;
@@ -124,11 +124,11 @@ public class app13 {
                     double avg = (double) sum / errors.size();
                     double avg_comparisons = (double) sum_comparisons / comparisons.size();
                     double correct_edges_all = (double) K * count;
-                    System.out.print("in the average the differences are " + avg + "\n");
+                    //System.out.print("in the average the differences are " + avg + "\n");
 
-                    System.out.print("the correct edges are " + Double.toString(correct_edges_all - avg) + "\n");
-                    System.out.print("the Q is " + Double.toString(1 - avg / K) + "\n");
-                    System.out.print("the comparisons were in avg " + avg_comparisons+ "\n");
+                   // System.out.print("the correct edges are " + Double.toString(correct_edges_all - avg) + "\n");
+                    //System.out.print("the Q is " + Double.toString(1 - avg / K) + "\n");
+                    //System.out.print("the comparisons were in avg " + avg_comparisons+ "\n");
 
 
 
