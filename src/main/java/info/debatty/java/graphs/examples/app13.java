@@ -20,16 +20,19 @@ import java.util.concurrent.ExecutionException;
  */
 public class app13 {
     public static int K = 4;
-    public static int count =16000;
-    public static int iterations=1;
+    public static int count =1000;
+    public static int iterations=3;
     public static int run=1;
     public static int depth=3;
+    public static int number_deletion=200;
+    public static int quality_sampling=10;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
             ArrayList<Integer> modified_edges = new ArrayList<Integer>();
             ArrayList<Integer> comparisons = new ArrayList<Integer>();
+            ArrayList<ArrayList<Integer>> errors_trend_global = new ArrayList<ArrayList<Integer>>();
             for (int a = 0; a < iterations; a++) {
                 // Generate some random nodes and add them to the graphs
                 Random r = new Random();
@@ -61,7 +64,7 @@ public class app13 {
                 OnlineGraph<Integer> online_graph = new OnlineGraph<Integer>(graph_og);
 
                 //start to delete nodes
-                for (int i = 0; i < 500; i++) {
+                for (int i = 0; i < number_deletion; i++) {
                     ArrayList<Node> nodes_temp = new ArrayList<Node>();
                     Node<Integer> node2del = null;
                     for (Node<Integer> n : nodes) {
@@ -70,7 +73,11 @@ public class app13 {
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
 
+                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth);
+                    comparisons.add(node_comparisons);
+                    int wrong_edge = 0;
 
+                    if (i%quality_sampling==0) {
                     //create the brute graph
                     Brute builder = new Brute<Integer>();
                     builder.setK(K);
@@ -83,9 +90,7 @@ public class app13 {
                     Graph<Integer> graph_brute = builder.computeGraph(nodes_temp);
 
 
-                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth);
-                    comparisons.add(node_comparisons);
-                    int wrong_edge = 0;
+
 
                     // Iterate the nodes to see the differences
                     for (Node n : graph_og.getNodes()) {
@@ -108,8 +113,9 @@ public class app13 {
                     double q=  1- ((double) wrong_edge/K);
                     errors_trend_single.add(wrong_edge);
                     q_trend_single.add(q);
-                }
+                } }
                     System.out.print("the wrong edges are: " + errors_trend_single + "\n");
+                errors_trend_global.add(errors_trend_single);
                 System.out.print("the wrong q is: " + q_trend_single + "\n");
                     int sum = 0;
                     int sum_comparisons = 0;
@@ -187,7 +193,21 @@ public class app13 {
             System.out.print("the comparisons were in avg " + avg_comparisons+ "\n");
             if (b%3==0) depth++;}
 */
-            }}
+            }
+            ArrayList<Double> avg_errors_global = new ArrayList<Double>();
+            int lunghezza_liste=errors_trend_global.get(0).size();
+            for (int a=0;a<lunghezza_liste;a++) {
+                double c=0;
+                for (int i=0;i<iterations;i++)
+                {
+                c+=errors_trend_global.get(i).get(a);
+
+
+                }
+                avg_errors_global.add(c/iterations);
+
+        }
+            System.out.println("\n error trend: "+ avg_errors_global);        }
     }
 
 }
