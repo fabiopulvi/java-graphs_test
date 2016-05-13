@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="java-graphs_test:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/java_graphs_test_jar</output-path>
+    <root id="archive" name="java-graphs_test.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="D:/Fabio/Desktop/prova_jar/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="main" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/info/debatty/java-spamsum/0.1/java-spamsum-0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/info/debatty/java-string-similarity/0.13/java-string-similarity-0.13.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

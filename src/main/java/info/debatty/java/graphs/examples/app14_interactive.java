@@ -4,7 +4,6 @@ import info.debatty.java.graphs.*;
 import info.debatty.java.graphs.build.Brute;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -18,16 +17,25 @@ import java.util.concurrent.ExecutionException;
  *
  * 
  */
-public class app13 {
+public class app14_interactive {
     public static int K = 4;
-    public static int count =1000;
+    public static int count =100;
     public static int iterations=3;
-    public static int run=2;
+    public static int run=1; // still hardcoded
     public static int depth=3;
-    public static int number_deletion=300;
+    public static int number_deletion=30;
     public static int quality_sampling=10;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-
+        if (args.length!=6) {
+            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling");
+            return;
+        }
+        K = Integer.parseInt(args[0]);
+        count = Integer.parseInt(args[1]);
+        number_deletion = Integer.parseInt(args[2]);
+        iterations = Integer.parseInt(args[3]);
+        depth = Integer.parseInt(args[4]);
+        quality_sampling = Integer.parseInt(args[5]);
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
             ArrayList<Integer> modified_edges = new ArrayList<Integer>();
