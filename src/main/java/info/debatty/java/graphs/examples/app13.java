@@ -114,7 +114,7 @@ public class app13 {
                     errors_trend_single.add(wrong_edge);
                     q_trend_single.add(q);
                 } }
-                    System.out.print("the wrong edges are: " + errors_trend_single + "\n");
+                  //  System.out.print("the wrong edges are: " + errors_trend_single + "\n");
                 errors_trend_global.add(errors_trend_single);
                 //System.out.print("the wrong q is: " + q_trend_single + "\n");
                     int sum = 0;
