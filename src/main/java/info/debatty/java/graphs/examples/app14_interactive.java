@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 public class app14_interactive {
     public static int K = 4;
     public static int count =100;
-    public static int iterations=3;
+    public static int iterations=10;
     public static int run=1; // still hardcoded
     public static int depth=3;
     public static int number_deletion=30;
@@ -45,6 +45,9 @@ public class app14_interactive {
             ArrayList<ArrayList<Integer>> errors_trend_global = new ArrayList<ArrayList<Integer>>();
             ArrayList<ArrayList<Double>> errors_trend_global_pc = new ArrayList<ArrayList<Double>>();
             ArrayList<ArrayList<Double>> errors_trend_global_emt = new ArrayList<ArrayList<Double>>(); //theoretical modified edges
+            ArrayList<ArrayList<Double>> errors_trend_global_nodes_pc = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the total amount
+            ArrayList<ArrayList<Double>> errors_trend_global_nodes_emt = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the theoretical total amount
+                                                                                                            // inf(nodes deleted * k;nodes_still there)
             for (int a = 0; a < iterations; a++) {
                 // Generate some random nodes and add them to the graphs
                 Random r = new Random();
@@ -55,6 +58,8 @@ public class app14_interactive {
                 ArrayList<Integer> errors_trend_single = new ArrayList<Integer>();
                 ArrayList<Double> errors_trend_single_pc = new ArrayList<Double>();
                 ArrayList<Double> errors_trend_single_emt = new ArrayList<Double>();
+                ArrayList<Double> errors_trend_single_nodes_pc = new ArrayList<Double>();
+                ArrayList<Double> errors_trend_single_nodes_emt = new ArrayList<Double>();
                 ArrayList<Integer> modified_edges_trend_single = new ArrayList<Integer>();
                 ArrayList<Integer> comparisons_trend_single = new ArrayList<Integer>();
                 ArrayList<Double> q_trend_single = new ArrayList<Double>();
@@ -108,6 +113,11 @@ public class app14_interactive {
                         //System.out.println("\n Killed: "+(i+1)+" nodes");
                         int total_edges=(count-(i+1))*K;
                         int modified_edges_theo = (i+1)*K;
+                        if (modified_edges_theo>total_edges) modified_edges_theo = total_edges;
+                        int remained_nodes=count-(i+1);
+                        int modified_nodes_theo = (i+1)*K;
+                        if (modified_nodes_theo>remained_nodes) modified_nodes_theo = remained_nodes;
+                        int nodes_involved=0;
                         //System.out.println("\n There are "+total_edges+" total edges");
                         // Iterate the nodes to see the differences
                         for (Node n : graph_og.getNodes()) {
@@ -123,6 +133,7 @@ public class app14_interactive {
                                 //System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
                             //}
                             wrong_edge += node_wrong_edges;
+                            if (node_wrong_edges>0) nodes_involved++;
 
 
                     }
@@ -131,9 +142,13 @@ public class app14_interactive {
                         errors_trend_single.add(wrong_edge);
                         double wrong_edges_pc = (double) wrong_edge / total_edges * 100;
                         double wrong_edges_emt = (double) wrong_edge / modified_edges_theo * 100;
+                        double wrong_nodes_pc = (double) nodes_involved / remained_nodes * 100;
+                        double wrong_nodes_emt = (double) nodes_involved / modified_nodes_theo * 100;
                         // System.out.println("\n relative error: "+wrong_edges_pc);
                         errors_trend_single_pc.add(wrong_edges_pc);
                         errors_trend_single_emt.add(wrong_edges_emt);
+                        errors_trend_single_nodes_pc.add(wrong_nodes_pc);
+                        errors_trend_single_nodes_emt.add(wrong_nodes_emt);
                         q_trend_single.add(q);
                 } }
                     System.out.print("the wrong edges are: " + errors_trend_single + "\n");
@@ -141,6 +156,8 @@ public class app14_interactive {
                 errors_trend_global.add(errors_trend_single);
                 errors_trend_global_pc.add(errors_trend_single_pc);
                 errors_trend_global_emt.add(errors_trend_single_emt);
+                errors_trend_global_nodes_pc.add(errors_trend_single_pc);
+                errors_trend_global_nodes_emt.add(errors_trend_single_emt);
                 //System.out.print("the wrong q is: " + q_trend_single + "\n");
                     int sum = 0;
                     int sum_comparisons = 0;
@@ -229,6 +246,8 @@ public class app14_interactive {
             ArrayList<Double> avg_errors_global = new ArrayList<Double>();
             ArrayList<Double> avg_errors_global_pc = new ArrayList<Double>();
             ArrayList<Double> avg_errors_global_emt = new ArrayList<Double>();
+            ArrayList<Double> avg_errors_global_nodes_pc = new ArrayList<Double>();
+            ArrayList<Double> avg_errors_global_nodes_emt = new ArrayList<Double>();
             int lunghezza_liste=errors_trend_global.get(0).size();
             for (int a=0;a<lunghezza_liste;a++) {
                 double c=0;
@@ -266,6 +285,30 @@ public class app14_interactive {
 
             }
             System.out.println("\n error trend relative over theoretical number of modified edges: "+ avg_errors_global_emt);
+            for (int a=0;a<lunghezza_liste;a++) {
+                double c=0;
+                for (int i=0;i<iterations;i++)
+                {
+                    c+=errors_trend_global_nodes_pc.get(i).get(a);
+
+
+                }
+                avg_errors_global_nodes_pc.add(c/iterations);
+
+            }
+            System.out.println("\n nodes errors relative to the amount of nodes: "+ avg_errors_global_nodes_pc);
+            for (int a=0;a<lunghezza_liste;a++) {
+                double c=0;
+                for (int i=0;i<iterations;i++)
+                {
+                    c+=errors_trend_global_nodes_emt.get(i).get(a);
+
+
+                }
+                avg_errors_global_nodes_emt.add(c/iterations);
+
+            }
+            System.out.println("\n error trend relative over theoretical number of modified nodes: "+ avg_errors_global_emt);
         }
     }
 
