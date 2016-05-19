@@ -69,7 +69,7 @@ public interface GraphInterface<T> {
 
 
     int removeAndUpdate_3 (Node<T> node);
-    int removeAndUpdate_3_depth (Node<T> node, int depth);
+    int removeAndUpdate_3_depth (Node<T> node, int depth, boolean random);
 
     public Iterable<Node<T>> getNodes();
 

@@ -73,7 +73,7 @@ public class app13 {
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
 
-                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth);
+                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, false);
                     comparisons.add(node_comparisons);
                     int wrong_edge = 0;
 

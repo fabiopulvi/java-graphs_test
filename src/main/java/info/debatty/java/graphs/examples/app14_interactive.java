@@ -25,9 +25,10 @@ public class app14_interactive {
     public static int depth=3;
     public static int number_deletion=30;
     public static int quality_sampling=1;
+    public static int max_value=100000;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        if (args.length!=6) {
-            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling");
+        if (args.length!=7) {
+            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value");
             return;
         }
 
@@ -37,6 +38,7 @@ public class app14_interactive {
         iterations = Integer.parseInt(args[3]);
         depth = Integer.parseInt(args[4]);
         quality_sampling = Integer.parseInt(args[5]);
+        max_value = Integer.parseInt(args[6]);
 
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
@@ -65,7 +67,7 @@ public class app14_interactive {
                 ArrayList<Double> q_trend_single = new ArrayList<Double>();
                 for (int i = 0; i < count; i++) {
                     // The value of our nodes will be an int
-                    int value = r.nextInt(10000);
+                    int value = r.nextInt(max_value);
                     nodes.add(new Node<Integer>(String.valueOf(i), value));
                     nodes_og.add(new Node<Integer>(String.valueOf(i), value));
                 }
@@ -92,7 +94,7 @@ public class app14_interactive {
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
 
-                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth);
+                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, false);
                     comparisons.add(node_comparisons);
                     int wrong_edge = 0;
 

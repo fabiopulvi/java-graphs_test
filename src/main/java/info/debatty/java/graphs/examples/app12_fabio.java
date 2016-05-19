@@ -179,10 +179,10 @@ import java.util.concurrent.ExecutionException;
  * 
  */
 public class app12_fabio {
-    public static int K = 4;
-    public static int count = 1000;
-    public static int iterations=1000;
-    public static int run=21;
+    public static int K = 1;
+    public static int count = 20;
+    public static int iterations=1;
+    public static int run=1;
     public static int depth=1;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
@@ -199,7 +199,7 @@ public class app12_fabio {
 
                 for (int i = 0; i < count; i++) {
                     // The value of our nodes will be an int
-                    int value = r.nextInt(10000);
+                    int value = r.nextInt(2000000);
                     if (i != 0) nodes_2.add(new Node<Integer>(String.valueOf(i), value));
                     nodes_1.add(new Node<Integer>(String.valueOf(i), value));
                 }
@@ -239,13 +239,19 @@ public class app12_fabio {
                         N0_list = online_graph_1.get(n);
                     }
                 }
-                //  System.out.println("\n the node to delete is N0: " + N0);
-
+                  System.out.println("\n the node to delete is N0: " + N0);
+                System.out.println("\n its' nl was: " + N0_list);
 
                 //online_graph_1.removeNodeFromNeighbourlist(N0);
-                int node_comparisons = online_graph_1.removeAndUpdate_3_depth(N0, depth);
+                int node_comparisons = online_graph_1.removeAndUpdate_3_depth(N0, depth, false);
                 comparisons.add(node_comparisons);
                 int wrong_edge = 0;
+
+                for (Node<Integer> node_all : online_graph_2.getNodes()) {
+                    NeighborList nl = online_graph_2.get(node_all);
+                    System.out.print(node_all);
+                    System.out.println(nl);
+                }
 
                 // Iterate the nodes to see the differences
                 for (Node n : online_graph_2.getNodes()) {
@@ -253,12 +259,12 @@ public class app12_fabio {
                     NeighborList nl2 = online_graph_2.get(n);
                     int node_wrong_edges = K - nl1.countCommons(nl2);
                     if (node_wrong_edges > 0) {
-                        //System.out.print("\n node: " + n);
+                        System.out.print("\n node: " + n);
 
-                        // System.out.println("\n updated graph: " + nl1);
-                        //  System.out.println("brute graph: " + nl2);
+                         System.out.println("\n updated graph: " + nl1);
+                          System.out.println("brute graph: " + nl2);
 
-                        //    System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
+                            System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
                     }
                     wrong_edge += node_wrong_edges;
 

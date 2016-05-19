@@ -949,13 +949,14 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
      * -add the closest node to the nl of node n in place of n2d
      * -if none of the nodes is available, obtain a new nl for n with ignns search
      *
+     * With the random set to true, also the candidates obtained with ignns are added to the search
      * @param node to delete
      * @return number of comparisons
      * #Fabio
      */
 
 
-    public int removeAndUpdate_3_depth(Node<T> node, int depth) {
+    public int removeAndUpdate_3_depth(Node<T> node, int depth, boolean rand) {
         int modified = 0; //number of nodes modified
         int iter = 1;
         int comparisons=0;
@@ -992,21 +993,22 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
         }
 
-      //  System.out.println("this is the  node to delete"+node);
-       // System.out.println("this is the nl of the node to delete"+nl2d);
-       // System.out.println("this is the set of nodes to update"+nodes2update_array);
+        System.out.println("this is the  node to delete"+node);
+        System.out.println("this is the nl of the node to delete"+nl2d);
+        System.out.println("this is the set of nodes to update"+nodes2update_array);
         nodes_to_check.clear();
         nodes_to_check.addAll(nodes2update_array);
      //   System.out.println("These were its neighbours: ");
       //  for (Neighbor neigh : map.get(node)) {
       //      System.out.println("neighbours: "+neigh.node+" "+map.get(neigh.node));
       //  }
-        //System.out.println("this is the set of candidates"+candidates);
+        System.out.println("this is the set of candidates"+candidates);
         for (Node<T> n2chk : nodes_to_check) {
             if (!candidates.contains(n2chk)) {
                 candidates.add(n2chk);
             }
         }
+        System.out.println("this is the set of candidates"+candidates);
         iter = 2;
         while (iter <= depth) {
             ArrayList<Node<T>> nodes_to_add = new ArrayList<Node<T>>();
@@ -1025,6 +1027,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             nodes_to_check.addAll(nodes_to_add);
             nodes_to_check.removeAll(nodes_to_del);
         }
+        System.out.println("this is the set of candidates"+candidates);
        // System.out.println("These were the node to update and their neighbours: ");
         //for (Node<T> nodes : nodes2update_array) {
 
@@ -1084,6 +1087,8 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         }
         return comparisons;
     }
+
+
 
 
 }
