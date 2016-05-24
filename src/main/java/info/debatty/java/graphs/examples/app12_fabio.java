@@ -179,7 +179,7 @@ import java.util.concurrent.ExecutionException;
  * 
  */
 public class app12_fabio {
-    public static int K = 1;
+    public static int K = 2;
     public static int count = 20;
     public static int iterations=1;
     public static int run=1;
@@ -243,7 +243,7 @@ public class app12_fabio {
                 System.out.println("\n its' nl was: " + N0_list);
 
                 //online_graph_1.removeNodeFromNeighbourlist(N0);
-                int node_comparisons = online_graph_1.removeAndUpdate_3_depth(N0, depth, false);
+                int node_comparisons = online_graph_1.removeAndUpdate_3_depth(N0, depth, true);
                 comparisons.add(node_comparisons);
                 int wrong_edge = 0;
 

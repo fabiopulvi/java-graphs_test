@@ -26,9 +26,10 @@ public class app14_interactive {
     public static int number_deletion=30;
     public static int quality_sampling=1;
     public static int max_value=100000;
+    public static boolean random=true;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        if (args.length!=7) {
-            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value");
+        if (args.length!=8) {
+            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value random_jump_boolean");
             return;
         }
 
@@ -39,6 +40,7 @@ public class app14_interactive {
         depth = Integer.parseInt(args[4]);
         quality_sampling = Integer.parseInt(args[5]);
         max_value = Integer.parseInt(args[6]);
+        random = Boolean.parseBoolean(args[7]);
 
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
@@ -94,7 +96,7 @@ public class app14_interactive {
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
 
-                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, false);
+                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, random);
                     comparisons.add(node_comparisons);
                     int wrong_edge = 0;
 

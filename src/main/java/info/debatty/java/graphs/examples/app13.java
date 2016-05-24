@@ -20,12 +20,13 @@ import java.util.concurrent.ExecutionException;
  */
 public class app13 {
     public static int K = 4;
-    public static int count =1000;
-    public static int iterations=3;
-    public static int run=2;
+    public static int count =400;
+    public static int iterations=10;
+    public static int run=1;
     public static int depth=3;
-    public static int number_deletion=300;
-    public static int quality_sampling=10;
+    public static int number_deletion=200;
+    public static int quality_sampling=20;
+    public static boolean random=false;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         for (int b = 1; b <= run; b++) {
@@ -73,7 +74,7 @@ public class app13 {
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
 
-                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, false);
+                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, random);
                     comparisons.add(node_comparisons);
                     int wrong_edge = 0;
 

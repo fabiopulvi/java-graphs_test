@@ -993,22 +993,23 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             if (map.get(node2update).size() == k - 1) nodes2update_array.add(node2update);
         }
 
-        System.out.println("this is the  node to delete"+node);
-        System.out.println("this is the nl of the node to delete"+nl2d);
-        System.out.println("this is the set of nodes to update"+nodes2update_array);
+      //  System.out.println("this is the  node to delete"+node);
+       // System.out.println("this is the nl of the node to delete"+nl2d);
+       // System.out.println("this is the set of nodes to update"+nodes2update_array);
         nodes_to_check.clear();
         nodes_to_check.addAll(nodes2update_array);
      //   System.out.println("These were its neighbours: ");
       //  for (Neighbor neigh : map.get(node)) {
       //      System.out.println("neighbours: "+neigh.node+" "+map.get(neigh.node));
       //  }
-        System.out.println("this is the set of candidates"+candidates);
+       // System.out.println("this is the set of candidates1 obtained from the nl\n of the node that is deleted"+candidates);
         for (Node<T> n2chk : nodes_to_check) {
             if (!candidates.contains(n2chk)) {
                 candidates.add(n2chk);
             }
         }
-        System.out.println("this is the set of candidates"+candidates);
+        nodes_to_check.clear();
+       // System.out.println("this is the set of candidates2 obtained from the nl\n of the node that has to be updated"+candidates);
         iter = 2;
         while (iter <= depth) {
             ArrayList<Node<T>> nodes_to_add = new ArrayList<Node<T>>();
@@ -1027,7 +1028,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             nodes_to_check.addAll(nodes_to_add);
             nodes_to_check.removeAll(nodes_to_del);
         }
-        System.out.println("this is the set of candidates"+candidates);
+       // System.out.println("this is the set of candidates3"+candidates);
        // System.out.println("These were the node to update and their neighbours: ");
         //for (Node<T> nodes : nodes2update_array) {
 
@@ -1036,8 +1037,22 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
        // }
 
         //System.out.println("this is the set of candidates"+candidates);
+        if (rand==true) {
+            //candidates obtained through IGNNS
+            for (Node<T> node2update : nodes2update_array) {
+                NeighborList nl = this.search(node2update.value, k);
+                for (Neighbor n2 : nl) {
+                    if (!candidates.contains(n2.node)) {
+                        candidates.add(n2.node);
+                    }
+                }
+            }
+        }
+       // System.out.println("this is the set of candidates4"+candidates);
+
 
         for (Node<T> node2update : nodes2update_array) {
+
             //first try to find an available node from nl
             ArrayList<Node<T>> candidatesNeighbours_array = new ArrayList<Node<T>>();
             ArrayList<Node<T>> nl2update_array = new ArrayList<Node<T>>();
@@ -1071,6 +1086,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             // no nodes are available. Do the search!
             //System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
             if (found == true) {
+
                 oldNl.add(new Neighbor(
                         node_higher_similarity,
                         higher_similarity));
@@ -1078,7 +1094,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
 
             }
             //else to the usual ignns
-            else {
+            else {//System.out.println("\n\nUsed ignns search!");
               //  System.out.println("\n unfortunately, none of them was available");
                 NeighborList nl = this.search(node2update.value, k);
                 map.put(node2update, nl);
