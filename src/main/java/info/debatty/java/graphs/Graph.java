@@ -421,6 +421,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
 
         // Node => Similarity with query node
         HashMap<Node<T>, Double> visited_nodes = new HashMap<Node<T>, Double>();
+
         int computed_similarities = 0;
         double global_highest_similarity = 0;
         ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(map.keySet());
@@ -508,6 +509,136 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
         }
         return neighbor_list;
     }
+
+    public final NeighborList search_2(final T query, final int k, Node<T> query_node) {
+        return search_2(query, k, DEFAULT_SPEEDUP,DEFAULT_EXPANSION,query_node);
+    }
+
+
+    public final NeighborList search_2(
+            final T query,
+            final int k,
+            final double speedup,
+            final double expansion,
+            Node<T> query_node) {
+
+        if (speedup <= 1.0) {
+            throw new InvalidParameterException("Speedup should be > 1.0");
+        }
+
+        int max_similarities = (int) (map.size() / speedup);
+
+        // Looking for more nodes than this graph contains...
+        // Or fall back to exhaustive search
+        if (k >= map.size()
+                || max_similarities >= map.size()) {
+
+            NeighborList nl = new NeighborList(k);
+            for (Node<T> node : map.keySet()) {
+                nl.add(
+                        new Neighbor(
+                                node,
+                                similarity.similarity(
+                                        query,
+                                        node.value)));
+            }
+            return nl;
+        }
+
+        // Node => Similarity with query node
+        HashMap<Node<T>, Double> visited_nodes = new HashMap<Node<T>, Double>();
+        visited_nodes.put(query_node, 0.00);
+
+        int computed_similarities = 0;
+        double global_highest_similarity = 0;
+        ArrayList<Node<T>> nodes = new ArrayList<Node<T>>(map.keySet());
+        Random rand = new Random();
+
+        while (true) { // Restart...
+            //System.out.println("Restart...");
+            if (computed_similarities >= max_similarities) {
+                break;
+            }
+
+            // Select a random node from the graph
+            Node<T> current_node = nodes.get(rand.nextInt(nodes.size()));
+
+            // Already been here => restart
+            if (visited_nodes.containsKey(current_node)) {
+
+                continue;
+            }
+
+            // starting point too far (similarity too small) => restart!
+            double restart_similarity = similarity.similarity(
+                    query,
+                    current_node.value);
+            computed_similarities++;
+            if (restart_similarity < global_highest_similarity / expansion) {
+                continue;
+            }
+
+            while (computed_similarities < max_similarities) {
+
+                NeighborList nl = this.get(current_node);
+
+                // Node has no neighbor => restart!
+                if (nl == null) {
+                    break;
+                }
+
+                // Check all neighbors and try to find a node with higher
+                // similarity
+                Iterator<Neighbor> Y_nl_iterator = nl.iterator();
+                Node<T> node_higher_similarity = null;
+                while (Y_nl_iterator.hasNext()) {
+
+                    Node<T> other_node = Y_nl_iterator.next().node;
+
+                    if (visited_nodes.containsKey(other_node)) {
+                        continue;
+                    }
+
+                    // Compute similarity to query
+                    double sim = similarity.similarity(
+                            query,
+                            other_node.value);
+                    computed_similarities++;
+                    visited_nodes.put(other_node, sim);
+
+                    // If this node provides an improved similarity, keep it
+                    if (sim > restart_similarity) {
+                        node_higher_similarity = other_node;
+                        restart_similarity = sim;
+
+                        // early break...
+                        break;
+                    }
+                }
+
+                // No node provides higher similarity
+                // => we reached the end of this track...
+                // => restart!
+                if (node_higher_similarity == null) {
+
+                    if (restart_similarity > global_highest_similarity) {
+                        global_highest_similarity = restart_similarity;
+                    }
+                    break;
+                }
+
+                current_node = node_higher_similarity;
+            }
+        }
+
+        NeighborList neighbor_list = new NeighborList(k);
+        for (Map.Entry<Node<T>, Double> entry : visited_nodes.entrySet()) {
+            neighbor_list.add(new Neighbor(entry.getKey(), entry.getValue()));
+        }
+        return neighbor_list;
+    }
+
+
 
     /**
      * Writes the graph as a GEXF file (to be used in Gephi, for example).
@@ -1043,7 +1174,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             //candidates obtained through IGNNS
             similarities=similarities*nodes2update_array.size();
             for (Node<T> node2update : nodes2update_array) {
-                NeighborList nl = this.search(node2update.value, k);
+                NeighborList nl = this.search_2(node2update.value, k, node2update);
                 for (Neighbor n2 : nl) {
                     if (!candidates.contains(n2.node)) {
                         candidates.add(n2.node);
@@ -1102,7 +1233,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             else {System.out.println("\n\nUsed ignns search!");
                  System.out.println("\n unfortunately, none of them was available");
                 System.out.println("candidates: "+candidates+" node2update: "+node2update+" neighbourlist: "+nl2update_array);
-                NeighborList nl = this.search(node2update.value, k);
+                NeighborList nl = this.search_2(node2update.value, k,node2update);
                 System.out.println("nl: "+nl);
                 map.put(node2update, nl);
                 modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
