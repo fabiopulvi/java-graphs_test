@@ -1,6 +1,7 @@
 package info.debatty.java.graphs.examples;
 
 import info.debatty.java.graphs.*;
+import info.debatty.java.graphs.Node;
 import info.debatty.java.graphs.build.Brute;
 
 import java.util.ArrayList;
@@ -11,29 +12,31 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by fabio on 23/02/16.
  *
- * App to emule a steady state behaviour,
+ * App to measure the accuracy perf with steady state behaviour,
  * sliding window of 5k nodes
  *  1000 nodes
  *  500 are deleted
  *
- * 
+ *
  */
 public class app15_interactive {
     public static int K = 4;
-    public static int count =500;
+    public static int count =200;
     public static int iterations=3;
     public static int run=1; // still hardcoded
     public static int depth=3;
     public static int number_deletion=2000;
-    public static int quality_sampling=10;
+    public static int quality_sampling=500;
     public static int max_value=100000;
     public static boolean random=true;
+    public static boolean adding_nodes=true;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         if (args.length!=8) {
             System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value random_jump_boolean");
-            //return;
+            // return;
         }
-        /*
+        if (adding_nodes==false) if(number_deletion>count) number_deletion=count;
+/*
         K = Integer.parseInt(args[0]);
         count = Integer.parseInt(args[1]);
         number_deletion = Integer.parseInt(args[2]);
@@ -42,17 +45,18 @@ public class app15_interactive {
         quality_sampling = Integer.parseInt(args[5]);
         max_value = Integer.parseInt(args[6]);
         random = Boolean.parseBoolean(args[7]);
-        */
+*/
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
             ArrayList<Integer> modified_edges = new ArrayList<Integer>();
             ArrayList<Integer> comparisons = new ArrayList<Integer>();
             ArrayList<ArrayList<Integer>> errors_trend_global = new ArrayList<ArrayList<Integer>>();
+            ArrayList<ArrayList<Integer>> comparisons_trend_global = new ArrayList<ArrayList<Integer>>();
             ArrayList<ArrayList<Double>> errors_trend_global_pc = new ArrayList<ArrayList<Double>>();
             ArrayList<ArrayList<Double>> errors_trend_global_emt = new ArrayList<ArrayList<Double>>(); //theoretical modified edges
             ArrayList<ArrayList<Double>> errors_trend_global_nodes_pc = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the total amount
             ArrayList<ArrayList<Double>> errors_trend_global_nodes_emt = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the theoretical total amount
-                                                                                                            // inf(nodes deleted * k;nodes_still there)
+            // inf(nodes deleted * k;nodes_still there)
             for (int a = 0; a < iterations; a++) {
                 // Generate some random nodes and add them to the graphs
                 Random r = new Random();
@@ -87,31 +91,35 @@ public class app15_interactive {
                 Graph<Integer> graph_og = builder_1.computeGraph(nodes_og);
                 OnlineGraph<Integer> online_graph = new OnlineGraph<Integer>(graph_og);
                 int last_node_id=count;
+
                 //start to delete nodes & add new ones
                 for (int i = 0; i < number_deletion; i++) {
                     ArrayList<Node> nodes_temp = new ArrayList<Node>();
                     Node<Integer> node2del = null;
+                    int node_comparisons=0;
                     for (Node<Integer> n : nodes) {
                         //System.out.println("\n"+n.id);
                         if ((Integer.parseInt(n.id)) == i) node2del = n;
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
-                    //create a new node:
-                    int value = r.nextInt(max_value);
-                    nodes.add(new Node<Integer>(String.valueOf(last_node_id), value));
-                    nodes_temp.add(new Node<Integer>(String.valueOf(last_node_id), value));
-                    //System.out.println("nodes:"+nodes);
-                    //System.out.println("nodes_temp:"+nodes_temp);
-                    //System.out.println("just added to the bruteforce graph the node:"+last_node_id+":"+value);
-                    online_graph.addNode(new Node<Integer>(String.valueOf(last_node_id), value));
-                    last_node_id++;
-
-                    int node_comparisons = graph_og.removeAndUpdate_3_depth(node2del, depth, random);
-                    comparisons.add(node_comparisons);
+                    if (adding_nodes==true) {
+                        //create a new node:
+                        int value = r.nextInt(max_value);
+                        nodes.add(new Node<Integer>(String.valueOf(last_node_id), value));
+                        nodes_temp.add(new Node<Integer>(String.valueOf(last_node_id), value));
+                        //System.out.println("nodes:"+nodes);
+                        //System.out.println("nodes_temp:"+nodes_temp);
+                        //System.out.println("just added to the bruteforce graph the node:"+last_node_id+":"+value);
+                        node_comparisons += online_graph.addNode(new Node<Integer>(String.valueOf(last_node_id), value));
+                        last_node_id++;
+                    }
+                    node_comparisons += graph_og.removeAndUpdate_3_depth(node2del, depth, random);
+                    //comparisons.add(node_comparisons);
                     int wrong_edge = 0;
 
-                    if (i%quality_sampling==0) {
-                    //create the brute graph
+                    if ((i+1)%quality_sampling==0) {
+
+                        //create the brute graph
                         Brute builder = new Brute<Integer>();
                         builder.setK(K);
                         builder.setSimilarity(new SimilarityInterface<Integer>() {
@@ -139,19 +147,19 @@ public class app15_interactive {
                             NeighborList nl1 = graph_og.get(n);
                             NeighborList nl2 = graph_brute.get(n);
                             int node_wrong_edges = K - nl1.countCommons(nl2);
-                        //    if (node_wrong_edges > 0) {
-                               // System.out.print("\n node: " + n);
+                            //    if (node_wrong_edges > 0) {
+                            // System.out.print("\n node: " + n);
 
-                             //   System.out.println("\n updated graph: " + nl1);
-                               // System.out.println("brute graph: " + nl2);
+                            //   System.out.println("\n updated graph: " + nl1);
+                            // System.out.println("brute graph: " + nl2);
 
-                                //System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
+                            //System.out.print("the differences are: " + (Integer.toString(node_wrong_edges)) + "\n");
                             //}
                             wrong_edge += node_wrong_edges;
                             if (node_wrong_edges>0) nodes_involved++;
 
 
-                    }
+                        }
 
                         double q=  1- ((double) wrong_edge/K);
                         errors_trend_single.add(wrong_edge);
@@ -165,27 +173,29 @@ public class app15_interactive {
                         errors_trend_single_nodes_pc.add(wrong_nodes_pc);
                         errors_trend_single_nodes_emt.add(wrong_nodes_emt);
                         q_trend_single.add(q);
-                } }
-                    System.out.print("the wrong edges are: " + errors_trend_single + "\n");
-                    System.out.print("the relative wrong edges are: " + errors_trend_single_pc + "\n");
+                        comparisons_trend_single.add(node_comparisons);
+                    } }
+                //System.out.print("the wrong edges are: " + errors_trend_single + "\n");
+                //System.out.print("the relative wrong edges are: " + errors_trend_single_pc + "\n");
                 errors_trend_global.add(errors_trend_single);
                 errors_trend_global_pc.add(errors_trend_single_pc);
                 errors_trend_global_emt.add(errors_trend_single_emt);
                 errors_trend_global_nodes_pc.add(errors_trend_single_pc);
                 errors_trend_global_nodes_emt.add(errors_trend_single_emt);
+                comparisons_trend_global.add(comparisons_trend_single);
                 //System.out.print("the wrong q is: " + q_trend_single + "\n");
-                    int sum = 0;
-                    int sum_comparisons = 0;
-                    for (int c : errors) sum += c;
-                    for (int c : comparisons) sum_comparisons += c;
-                    double avg = (double) sum / errors.size();
-                    double avg_comparisons = (double) sum_comparisons / comparisons.size();
-                    double correct_edges_all = (double) K * count;
-                    //System.out.print("in the average the differences are " + avg + "\n");
+                int sum = 0;
+                int sum_comparisons = 0;
+                for (int c : errors) sum += c;
+                for (int c : comparisons) sum_comparisons += c;
+                double avg = (double) sum / errors.size();
+                double avg_comparisons = (double) sum_comparisons / comparisons.size();
+                double correct_edges_all = (double) K * count;
+                //System.out.print("in the average the differences are " + avg + "\n");
 
-                   // System.out.print("the correct edges are " + Double.toString(correct_edges_all - avg) + "\n");
-                    //System.out.print("the Q is " + Double.toString(1 - avg / K) + "\n");
-                    //System.out.print("the comparisons were in avg " + avg_comparisons+ "\n");
+                // System.out.print("the correct edges are " + Double.toString(correct_edges_all - avg) + "\n");
+                //System.out.print("the Q is " + Double.toString(1 - avg / K) + "\n");
+                //System.out.print("the comparisons were in avg " + avg_comparisons+ "\n");
 
 
 
@@ -256,25 +266,28 @@ public class app15_interactive {
                     "\n number of nodes= "+count+
                     "\n number deletes nodes= "+number_deletion+
                     "\n iterations= "+iterations+
-                    "\n depth of deletion= "+depth);
+                    "\n depth of deletion= "+depth+
+                    "\n sampling= "+quality_sampling+
+                    "\n random= "+random);
 
             ArrayList<Double> avg_errors_global = new ArrayList<Double>();
             ArrayList<Double> avg_errors_global_pc = new ArrayList<Double>();
             ArrayList<Double> avg_errors_global_emt = new ArrayList<Double>();
             ArrayList<Double> avg_errors_global_nodes_pc = new ArrayList<Double>();
             ArrayList<Double> avg_errors_global_nodes_emt = new ArrayList<Double>();
+            ArrayList<Double> avg_comparison_global = new ArrayList<Double>();
             int lunghezza_liste=errors_trend_global.get(0).size();
             for (int a=0;a<lunghezza_liste;a++) {
                 double c=0;
                 for (int i=0;i<iterations;i++)
                 {
-                c+=errors_trend_global.get(i).get(a);
+                    c+=errors_trend_global.get(i).get(a);
 
 
                 }
                 avg_errors_global.add(c/iterations);
 
-        }
+            }
             System.out.println("\n error trend: "+ avg_errors_global);
             for (int a=0;a<lunghezza_liste;a++) {
                 double c=0;
@@ -299,7 +312,7 @@ public class app15_interactive {
                 avg_errors_global_emt.add(c/iterations);
 
             }
-           // System.out.println("\n error trend relative over theoretical number of modified edges: "+ avg_errors_global_emt);
+            // System.out.println("\n error trend relative over theoretical number of modified edges: "+ avg_errors_global_emt);
             for (int a=0;a<lunghezza_liste;a++) {
                 double c=0;
                 for (int i=0;i<iterations;i++)
@@ -311,7 +324,7 @@ public class app15_interactive {
                 avg_errors_global_nodes_pc.add(c/iterations);
 
             }
-           // System.out.println("\n nodes errors relative to the amount of nodes: "+ avg_errors_global_nodes_pc);
+            // System.out.println("\n nodes errors relative to the amount of nodes: "+ avg_errors_global_nodes_pc);
             for (int a=0;a<lunghezza_liste;a++) {
                 double c=0;
                 for (int i=0;i<iterations;i++)
@@ -323,7 +336,19 @@ public class app15_interactive {
                 avg_errors_global_nodes_emt.add(c/iterations);
 
             }
-           // System.out.println("\n error trend relative over theoretical number of modified nodes: "+ avg_errors_global_emt);
+            // System.out.println("\n error trend relative over theoretical number of modified nodes: "+ avg_errors_global_emt);
+            for (int a=0;a<lunghezza_liste;a++) {
+                double c=0;
+                for (int i=0;i<iterations;i++)
+                {
+                    c+=comparisons_trend_global.get(i).get(a);
+
+
+                }
+                avg_comparison_global.add(c/iterations);
+
+            }
+            System.out.println("\n comparisons: "+ avg_comparison_global);
         }
     }
 
