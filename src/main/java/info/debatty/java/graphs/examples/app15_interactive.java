@@ -31,8 +31,8 @@ public class app15_interactive {
     public static boolean random=true;
     public static boolean adding_nodes=true;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        if (args.length!=8) {
-            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value random_jump_boolean");
+        if (args.length!=9) {
+            System.out.println("Input wrong! \nCorrect usage: K number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value random_jump_boolean adding_node_boolean");
              return;
         }
         if (adding_nodes==false) if(number_deletion>count) number_deletion=count;
@@ -45,7 +45,7 @@ public class app15_interactive {
         quality_sampling = Integer.parseInt(args[5]);
         max_value = Integer.parseInt(args[6]);
         random = Boolean.parseBoolean(args[7]);
-
+        adding_nodes=Boolean.parseBoolean(args[8]);
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
             ArrayList<Integer> modified_edges = new ArrayList<Integer>();
