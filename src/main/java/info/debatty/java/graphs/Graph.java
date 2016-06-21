@@ -1229,14 +1229,27 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
                 modified++;  //modified only 1 edge
 
             }
-            //else to the usual ignns
-            else {System.out.println("\n\nUsed ignns search!");
+            //Decided not to do anything and have a node with k-1 neighbours
+            //this is more honest to force to analyze the rest of the graph (which is very very small indeed, but it
+            // would surely lead to a right solution
+            else {/*System.out.println("\n\nUsed ignns search for: "+node2update);
+                System.out.println("in the end it stayed"+map.get(node2update));
+                System.out.println(map.size());
+                for (Node<T> n: map.keySet()) {
+                    System.out.println(n);
+
+                }
+
                  System.out.println("\n unfortunately, none of them was available");
                 System.out.println("candidates: "+candidates+" node2update: "+node2update+" neighbourlist: "+nl2update_array);
+                /*
                 NeighborList nl = this.search_2(node2update.value, k,node2update);
                 System.out.println("nl: "+nl);
                 map.put(node2update, nl);
-                modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained
+                System.out.println("for node: "+node2update);
+                for (Neighbor n: nl)
+                System.out.println("added in the end: "+n.node);
+                modified += k;  //all the edges have been modified: thay can be still the same but they have been reobtained*/
             }
         }
         return comparisons;
