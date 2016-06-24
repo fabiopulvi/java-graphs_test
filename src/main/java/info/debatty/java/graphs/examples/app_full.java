@@ -19,27 +19,27 @@ import java.util.concurrent.ExecutionException;
  *
  *
  */
-public class app16_soures {
+public class app_full {
     public static int K = 4;
-    public static int count =200;
-    public static int iterations=1;
+    public static int count =100;
+    public static int iterations=100;
     public static int run=1; // still hardcoded
     public static int depth=3;
-    public static int number_deletion=2000;
-    public static int quality_sampling=1;
+    public static int number_deletion=6000;
+    public static int quality_sampling=10;
     public static int max_value=100000;
     public static boolean random=true;
-    public static boolean adding_nodes=true;
+    public static boolean adding_nodes=false;
     public static int type_of_source=2;
-    public static int add_source=1;
+    public static int add_source=3;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         if (args.length!=11) {
             System.out.println("Input wrong! \nCorrect usage: K_of_the_graph number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value type_source() random_jump_boolean adding_node_boolean adding_source()" +
                     "type of source: 1 if uniform, 2 if 3 well separated clusters, 3 if 3 overlapping clusters "+
-            "\n type of adding source: 1 if uniform, 2 randomly from the three clusers, 3 if from just one of the cluster and changes after n points");
+            "\n type of adding source: 1 if uniform, 2 randomly from the three clusers, 3 if from just one of the cluster and changes after n/6 points (2 rounds for each source)");
 
         }
-        if (adding_nodes==false) if(number_deletion>count) number_deletion=count;
+
         if (args.length>0) {
             K = Integer.parseInt(args[0]);
             count = Integer.parseInt(args[1]);
@@ -55,7 +55,7 @@ public class app16_soures {
             add_source = Integer.parseInt(args[10]);
 
         }
-        if (number_deletion>count-K-1) number_deletion=count-K-1;
+        if (adding_nodes==false) if (number_deletion>count-K-1) number_deletion=count-K-1;
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
             ArrayList<Integer> modified_edges = new ArrayList<Integer>();
@@ -83,7 +83,7 @@ public class app16_soures {
                 Dataset gaussian_mixture = new Dataset();
                 Dataset gaussian_mixture_2 = new Dataset();
                 Dataset gaussian_mixture_3 = new Dataset();
-                if (type_of_source==1) {
+                if ((type_of_source==1)||(type_of_source==2)) {
                     Random r = new Random();
                     for (int i = 0; i < count; i++) {
                         // The value of our nodes will be an int
@@ -93,11 +93,6 @@ public class app16_soures {
                         nodes.add(new Node<Double[]>(String.valueOf(i), temp));
                         nodes_og.add(new Node<Double[]>(String.valueOf(i), temp));
                     }
-                }
-
-
-
-                if (type_of_source==2) {
                     gaussian_mixture.addCenter(
                             new Center(
                                     2,                          // weight
@@ -115,7 +110,12 @@ public class app16_soures {
                                     2,
                                     new double[]{200.0, 200.0},
                                     new double[]{2.0, 2.0}));
+
                 }
+
+
+
+
                 if (type_of_source==3) {
                     gaussian_mixture.addCenter(
                             new Center(
@@ -135,18 +135,21 @@ public class app16_soures {
                                     new double[]{0.0, 0.0},
                                     new double[]{5.0, 5.0}));
                 }
+                Iterator<Double[]> iterator = gaussian_mixture.iterator();
+                Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
+                Iterator<Double[]> iterator_3 = gaussian_mixture_3.iterator();
                 if ((type_of_source==2)||(type_of_source==3)) {
-                    Iterator<Double[]> iterator = gaussian_mixture.iterator();
+                    //Iterator<Double[]> iterator = gaussian_mixture.iterator();
                     for (int i = 0; i < count/3; i++) {
                         data.add(iterator.next());
                     }
 
-                    Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
+                    //Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
                     for (int i = 0; i < count/3+1; i++) {
                         data.add(iterator_2.next());
                     }
 
-                    Iterator<Double[]> iterator_3 = gaussian_mixture_3.iterator();
+                    //Iterator<Double[]> iterator_3 = gaussian_mixture_3.iterator();
                     for (int i = 0; i < count/3+1; i++) {
                         data.add(iterator_3.next());
 
@@ -170,6 +173,7 @@ public class app16_soures {
                     Collections.shuffle(data);
                     //put the nodes not in sequential order
                     Random r = new Random();
+
                     for (int i = 0; i < count; i++) {
                         // The value of our nodes will be an int
 
@@ -208,7 +212,8 @@ public class app16_soures {
                 Graph<Double[]> graph_og = builder_1.computeGraph(nodes_og);
                 OnlineGraph<Double[]> online_graph = new OnlineGraph<Double[]>(graph_og);
                 int last_node_id=count;
-
+                int adding_slot= number_deletion/6; //in case of switch 3, adding_slot points are added from one cluster, then the other and so on.che
+                int data_source = 1;
                 //start to delete nodes & add new ones
                 for (int i = 0; i < number_deletion; i++) {
                     ArrayList<Node> nodes_temp = new ArrayList<Node>();
@@ -222,40 +227,47 @@ public class app16_soures {
                     }
                     if (adding_nodes==true) {
                         Double[] temp = new Double[]{0.0,0.0};
+
                         //create a new node:
                         if (add_source==1) {
                             Random r = new Random();
                             double value = r.nextDouble();
                             double value2=r.nextDouble();
                             temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                            nodes.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
-                            nodes_temp.add(new Node<Double[]>(String.valueOf(last_node_id), temp));}
+                            }
                         if (add_source==2) {
                             Random r = new Random();
-                            int which_gauss = r.nextInt(2);
-                            if (which_gauss==0) {}
-                            if (which_gauss==1) {}
-                            if (which_gauss==2) {}
+                            int which_gauss = r.nextInt(3);
 
-                            double value2=r.nextDouble();
-                            temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                            nodes.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
-                            nodes_temp.add(new Node<Double[]>(String.valueOf(last_node_id), temp));}
-                        if (add_source==2) {
-                            Random r = new Random();
-                            double value = r.nextDouble();
-                            double value2=r.nextDouble();
-                            temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                            nodes.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
-                            nodes_temp.add(new Node<Double[]>(String.valueOf(last_node_id), temp));}
+                            if (which_gauss==0) {temp=iterator.next();}
+                            if (which_gauss==1) {temp=iterator_2.next();}
+                            if (which_gauss==2) {temp=iterator_3.next();}
+
+
+                            }
+
+                        if (add_source==3) {
+                            if (last_node_id%adding_slot==0) {
+
+                                data_source++;
+                                if (data_source==4) data_source=1;
+                            }
+                            if (data_source==1) {temp=iterator.next();}
+                            if (data_source==2) {temp=iterator_2.next();}
+                            if (data_source==3) {temp=iterator_3.next();}
+
+                            }
+                        nodes.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
+                        nodes_temp.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
 
 
 
                         //System.out.println("nodes:"+nodes);
                         //System.out.println("nodes_temp:"+nodes_temp);
-                        System.out.println("just added to the bruteforce graph the node:"+last_node_id+":"+temp[0]+","+temp[1]);
+                        //System.out.println("just added to the bruteforce graph the node:"+last_node_id+":"+temp[0]+","+temp[1]);
                         node_comparisons += online_graph.addNode(new Node<Double[]>(String.valueOf(last_node_id), temp));
                         last_node_id++;
+
                         //last_node_id++;
 
 
@@ -285,10 +297,10 @@ public class app16_soures {
                         Graph<Double[]> graph_brute = builder.computeGraph(nodes_temp);
 
 
-
+                        int total_edges=0;
                         //System.out.println("\n Killed: "+(i+1)+" nodes");
-                        //int total_edges=(count-(i+1))*K;
-                        int total_edges=count*K;
+                        if (adding_nodes==false) {total_edges=(count-(i+1))*K;}
+                        else {total_edges=count*K;}
                         int modified_edges_theo = (i+1)*K;
                         if (modified_edges_theo>total_edges) modified_edges_theo = total_edges;
                         int remained_nodes=count-(i+1);
@@ -427,6 +439,9 @@ public class app16_soures {
             if (type_of_source==1) System.out.println("Uniform source");
             if (type_of_source==2) System.out.println("Source from 3 well separated clusters");
             if (type_of_source==3) System.out.println("Source from 3 overlapping clusters");
+            if (add_source==1) System.out.println("New nodes from a Uniform source");
+            if (add_source==2) System.out.println("New nodes from a source from the 3 clusters randomly");
+            if (add_source==3) System.out.println("New nodes from waves of points from one cluster (changing at each 1/6 adding points");
 
 
             ArrayList<Double> avg_errors_global = new ArrayList<Double>();
