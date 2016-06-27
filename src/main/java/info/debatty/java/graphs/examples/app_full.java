@@ -32,6 +32,7 @@ public class app_full {
     public static boolean adding_nodes=false;
     public static int type_of_source=2;
     public static int add_source=3;
+    public static int wave = 1000;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         if (args.length!=11) {
             System.out.println("Input wrong! \nCorrect usage: K_of_the_graph number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value type_source() random_jump_boolean adding_node_boolean adding_source()" +
@@ -55,6 +56,7 @@ public class app_full {
             add_source = Integer.parseInt(args[10]);
 
         }
+        if (args.length>11) {wave=Integer.parseInt(args[11]);};
         if (adding_nodes==false) if (number_deletion>count-K-1) number_deletion=count-K-1;
         for (int b = 1; b <= run; b++) {
             ArrayList<Integer> errors = new ArrayList<Integer>();
@@ -96,19 +98,20 @@ public class app_full {
                     gaussian_mixture.addCenter(
                             new Center(
                                     2,                          // weight
-                                    new double[]{10.0, 10.0},   // center
+                                    new double[]{-50.0, 0.0},   // center
                                     new double[]{2.0, 2.0}));   // deviation
 
                     gaussian_mixture_2.addCenter(
                             new Center(
                                     2,
-                                    new double[]{100.0, 100.0},
+                                    new double[]{50.0, 0.0},
+
                                     new double[]{2.0, 2.0}));
 
                     gaussian_mixture_3.addCenter(
                             new Center(
                                     2,
-                                    new double[]{200.0, 200.0},
+                                    new double[]{0.0, 86.6},
                                     new double[]{2.0, 2.0}));
 
                 }
@@ -120,20 +123,20 @@ public class app_full {
                     gaussian_mixture.addCenter(
                             new Center(
                                     2,                          // weight
-                                    new double[]{10.0, 10.0},   // center
-                                    new double[]{3.0, 3.0}));   // deviation
+                                    new double[]{-50.0, 0.0},   // center
+                                    new double[]{50.0, 50.0}));   // deviation
 
                     gaussian_mixture_2.addCenter(
                             new Center(
                                     2,
-                                    new double[]{5.0, 5.0},
-                                    new double[]{5.0, 5.0}));
+                                    new double[]{50.0, 0.0},
+                                    new double[]{50.0, 50.0}));
 
                     gaussian_mixture_3.addCenter(
                             new Center(
                                     2,
-                                    new double[]{0.0, 0.0},
-                                    new double[]{5.0, 5.0}));
+                                    new double[]{0.0, 86.6},
+                                    new double[]{50.0, 50.0}));
                 }
                 Iterator<Double[]> iterator = gaussian_mixture.iterator();
                 Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
@@ -247,7 +250,8 @@ public class app_full {
                             }
 
                         if (add_source==3) {
-                            if (last_node_id%adding_slot==0) {
+                            //if (last_node_id%adding_slot==0) {
+                            if (last_node_id%wave==0) {
 
                                 data_source++;
                                 if (data_source==4) data_source=1;
