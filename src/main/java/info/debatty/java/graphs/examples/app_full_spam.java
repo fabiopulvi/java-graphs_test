@@ -1,43 +1,50 @@
 package info.debatty.java.graphs.examples;
 
-import info.debatty.java.graphs.*;
-import info.debatty.java.graphs.build.Brute;
-import info.debatty.java.datasets.gaussian.Center;
-import info.debatty.java.datasets.gaussian.Dataset;
 
-import java.util.*;
+import info.debatty.java.graphs.*;
+import info.debatty.java.graphs.build.Brute;;
+import info.debatty.java.graphs.SimilarityInterface;
+import info.debatty.java.stringsimilarity.JaroWinkler;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 
 /**
- * Created by fabio on 23/02/16.
+
  *
- * App to measure the accuracy perf with steady state behaviour,
- * sliding window of 5k nodes
- *  1000 nodes
- *  500 are deleted
+ *
  *
  *
  */
-public class app_full {
-    public static int K = 4;
-    public static int count =100;
-    public static int iterations=100;
+public class app_full_spam {
+    public static int K = 10;
+    public static int count =200;
+    public static int iterations=10;
     public static int run=1; // still hardcoded
     public static int depth=3;
     public static int number_deletion=6000;
     public static int quality_sampling=10;
     public static int max_value=100000;
     public static boolean random=true;
-    public static boolean adding_nodes=false;
+    public static boolean adding_nodes=true;
     public static int type_of_source=2;
-    public static int add_source=3;
+    public static int add_source=4;
     public static int wave = 1000;
+    public static int threshold_stream=count;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         if (args.length!=11) {
             System.out.println("Input wrong! \nCorrect usage: K_of_the_graph number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value type_source() random_jump_boolean adding_node_boolean adding_source()" +
-                    "type of source: 1 if uniform, 2 if 3 well separated clusters, 3 if 3 overlapping clusters "+
-            "\n type of adding source: 1 if uniform, 2 randomly from the three clusers, 3 if from just one of the cluster and changes after n/6 points (2 rounds for each source)");
+                    "type of source: - disabled, just spam "+
+            "\n type of adding source: - disabled, just spam! spam spam spam");
 
         }
 
@@ -69,8 +76,27 @@ public class app_full {
             ArrayList<ArrayList<Double>> errors_trend_global_nodes_pc = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the total amount
             ArrayList<ArrayList<Double>> errors_trend_global_nodes_emt = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the theoretical total amount
             // inf(nodes deleted * k;nodes_still there)
+            String path = "726-unique-spams";
+            ArrayList<String> data = new ArrayList<String>();
+            ArrayList<String> data_new = new ArrayList<String>();
+            try {
+                File file = new File(path);
+                FileReader fr = new FileReader(file);
+                BufferedReader dati = new BufferedReader(new FileReader(new File(path)));
+                String nextLine;
+                // Leggo una riga per volta e memorizzo il suo contenuto in un oggetto riga
+                int i=0;
+                while ((nextLine = dati.readLine()) != null){
+                    i++;
+                    if (i<=threshold_stream) data.add(nextLine);
+                    else data_new.add(nextLine);
+                }
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+            }
             for (int a = 0; a < iterations; a++) {
-                ArrayList<Double[]> data = new ArrayList<Double[]>();
+
                 ArrayList<Node> nodes = new ArrayList<Node>(count);
                 ArrayList<Node> nodes_og = new ArrayList<Node>(count);  //for online graph
 
@@ -82,194 +108,61 @@ public class app_full {
                 ArrayList<Integer> modified_edges_trend_single = new ArrayList<Integer>();
                 ArrayList<Integer> comparisons_trend_single = new ArrayList<Integer>();
                 ArrayList<Double> q_trend_single = new ArrayList<Double>();
-                Dataset gaussian_mixture = new Dataset();
-                Dataset gaussian_mixture_2 = new Dataset();
-                Dataset gaussian_mixture_3 = new Dataset();
-                if ((type_of_source==1)||(type_of_source==2)) {
-                    Random r = new Random();
-                    for (int i = 0; i < count; i++) {
-                        // The value of our nodes will be an int
-                        double value = r.nextDouble();
-                        double value2=r.nextDouble();
-                        Double[] temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                        nodes.add(new Node<Double[]>(String.valueOf(i), temp));
-                        nodes_og.add(new Node<Double[]>(String.valueOf(i), temp));
-                    }
-                    gaussian_mixture.addCenter(
-                            new Center(
-                                    2,                          // weight
-                                    new double[]{-50.0, 0.0},   // center
-                                    new double[]{2.0, 2.0}));   // deviation
-
-                    gaussian_mixture_2.addCenter(
-                            new Center(
-                                    2,
-                                    new double[]{50.0, 0.0},
-
-                                    new double[]{2.0, 2.0}));
-
-                    gaussian_mixture_3.addCenter(
-                            new Center(
-                                    2,
-                                    new double[]{0.0, 86.6},
-                                    new double[]{2.0, 2.0}));
-
+                int taken_from_others = 0;
+                for (int i = 0; i < data.size(); i++) {
+                    nodes.add(new Node<String>(String.valueOf(i), data.get(i)));
+                    nodes_og.add(new Node<String>(String.valueOf(i), data.get(i)));
                 }
 
 
-
-
-                if (type_of_source==3) {
-                    gaussian_mixture.addCenter(
-                            new Center(
-                                    2,                          // weight
-                                    new double[]{-50.0, 0.0},   // center
-                                    new double[]{50.0, 50.0}));   // deviation
-
-                    gaussian_mixture_2.addCenter(
-                            new Center(
-                                    2,
-                                    new double[]{50.0, 0.0},
-                                    new double[]{50.0, 50.0}));
-
-                    gaussian_mixture_3.addCenter(
-                            new Center(
-                                    2,
-                                    new double[]{0.0, 86.6},
-                                    new double[]{50.0, 50.0}));
-                }
-                Iterator<Double[]> iterator = gaussian_mixture.iterator();
-                Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
-                Iterator<Double[]> iterator_3 = gaussian_mixture_3.iterator();
-                if ((type_of_source==2)||(type_of_source==3)) {
-                    //Iterator<Double[]> iterator = gaussian_mixture.iterator();
-                    for (int i = 0; i < count/3; i++) {
-                        data.add(iterator.next());
-                    }
-
-                    //Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
-                    for (int i = 0; i < count/3+1; i++) {
-                        data.add(iterator_2.next());
-                    }
-
-                    //Iterator<Double[]> iterator_3 = gaussian_mixture_3.iterator();
-                    for (int i = 0; i < count/3+1; i++) {
-                        data.add(iterator_3.next());
-
-                    }
-                    /*
-                    for (int i=0; i<data.size(); i++) {
-                        int id_random=0;
-                        Random rand = new Random();
-                        Hashtable <Integer,Integer> already_in = new Hashtable<Integer, Integer>();
-                        while (nodes.size() < data.size()) {
-                            id_random=rand.nextInt(data.size() - 1);
-                            if (!already_in.contains(id_random)) {
-                                already_in.put(id_random,1);
-                                nodes.add(new Node<Double[]>(String.valueOf(id_random),data.get(i)));
-                                nodes_og.add(new Node<Double[]>(String.valueOf(id_random),data.get(i)));
-                            }
-                        }
-                    }
-                    */
-
-                    Collections.shuffle(data);
-                    //put the nodes not in sequential order
-                    Random r = new Random();
-
-                    for (int i = 0; i < count; i++) {
-                        // The value of our nodes will be an int
-
-                        Double[] temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                        nodes.add(new Node<Double[]>(String.valueOf(i), data.get(i)));
-                        nodes_og.add(new Node<Double[]>(String.valueOf(i), data.get(i)));
-
-
-                    }
-
-
-
-
-
-                }
 
                 //create the two arrays of nodes
 
 
                 // this is for the online graph
-                Brute builder_1 = new Brute<Double[]>();
+                Brute builder_1 = new Brute<String>();
                 builder_1.setK(K);
-                builder_1.setSimilarity(new SimilarityInterface<Double[]>() {
+                builder_1.setSimilarity(new SimilarityInterface<String>() {
 
-                    public double similarity(Double[] value1, Double[] value2)
-                    {
-                        double agg = 0;
-                        for (int i = 0; i < value1.length; i++) {
-                            agg += (value1[i] - value2[i]) * (value1[i] - value2[i]);
-                        }
-                        return (double) 1.0 / (1 + Math.sqrt(agg));
+                    public double similarity(
+                            final String value1,
+                            final String value2) {
+                        JaroWinkler jw = new JaroWinkler();
+                        return jw.similarity(value1, value2);
                     }
-
                 });
 
-                Graph<Double[]> graph_og = builder_1.computeGraph(nodes_og);
-                OnlineGraph<Double[]> online_graph = new OnlineGraph<Double[]>(graph_og);
-                int last_node_id=count;
-                int adding_slot= number_deletion/6; //in case of switch 3, adding_slot points are added from one cluster, then the other and so on.che
-                int data_source = 1;
-                //start to delete nodes & add new ones
+                Graph<String> graph_og = builder_1.computeGraph(nodes_og);
+                OnlineGraph<String> online_graph = new OnlineGraph<String>(graph_og);
+                int last_node_id=threshold_stream;
+                if (adding_nodes==false) number_deletion=threshold_stream-K-1;
                 for (int i = 0; i < number_deletion; i++) {
                     ArrayList<Node> nodes_temp = new ArrayList<Node>();
-                    Node<Double[]> node2del = null;
+                    Node<String> node2del = null;
                     int node_comparisons=0;
-
-                    for (Node<Double[]> n : nodes) {
+                    for (Node<String> n : nodes) {
                         //System.out.println(""+n.id);
                         if ((Integer.parseInt(n.id)) == i) node2del = n;
                         if ((Integer.parseInt(n.id)) > i) nodes_temp.add(n);
                     }
+
+                    node_comparisons += graph_og.removeAndUpdate_3_depth(node2del, depth, random);
+
                     if (adding_nodes==true) {
-                        Double[] temp = new Double[]{0.0,0.0};
-
-                        //create a new node:
-                        if (add_source==1) {
-                            Random r = new Random();
-                            double value = r.nextDouble();
-                            double value2=r.nextDouble();
-                            temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                            }
-                        if (add_source==2) {
-                            Random r = new Random();
-                            int which_gauss = r.nextInt(3);
-
-                            if (which_gauss==0) {temp=iterator.next();}
-                            if (which_gauss==1) {temp=iterator_2.next();}
-                            if (which_gauss==2) {temp=iterator_3.next();}
+                        if (taken_from_others==data_new.size()-1) {break;}
+                        String temp = data_new.get(taken_from_others);
+                        taken_from_others++;
 
 
-                            }
-
-                        if (add_source==3) {
-                            //if (last_node_id%adding_slot==0) {
-                            if (last_node_id%wave==0) {
-
-                                data_source++;
-                                if (data_source==4) data_source=1;
-                            }
-                            if (data_source==1) {temp=iterator.next();}
-                            if (data_source==2) {temp=iterator_2.next();}
-                            if (data_source==3) {temp=iterator_3.next();}
-
-                            }
-                        nodes.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
-                        nodes_temp.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
+                        nodes.add(new Node<String>(String.valueOf(last_node_id), temp));
+                        nodes_temp.add(new Node<String>(String.valueOf(last_node_id), temp));
 
 
 
                         //System.out.println("nodes:"+nodes);
                         //System.out.println("nodes_temp:"+nodes_temp);
-                        //System.out.println("just added to the bruteforce graph the node:"+last_node_id+":"+temp[0]+","+temp[1]);
-                        node_comparisons += online_graph.addNode(new Node<Double[]>(String.valueOf(last_node_id), temp));
+
+                        node_comparisons += online_graph.addNode(new Node<String>(String.valueOf(last_node_id), temp));
                         last_node_id++;
 
                         //last_node_id++;
@@ -277,7 +170,7 @@ public class app_full {
 
 
                     }
-                    node_comparisons += graph_og.removeAndUpdate_3_depth(node2del, depth, random);
+
                     //comparisons.add(node_comparisons);
                     int wrong_edge = 0;
 
@@ -286,17 +179,14 @@ public class app_full {
                         //create the brute graph
                         Brute builder = new Brute<Double[]>();
                         builder.setK(K);
-                        builder.setSimilarity(new SimilarityInterface<Double[]>() {
+                        builder.setSimilarity(new SimilarityInterface<String>() {
 
-                            public double similarity(Double[] value1, Double[] value2)
-                            {
-                                double agg = 0;
-                                for (int i = 0; i < value1.length; i++) {
-                                    agg += (value1[i] - value2[i]) * (value1[i] - value2[i]);
-                                }
-                                return (double) 1.0 / (1 + Math.sqrt(agg));
+                            public double similarity(
+                                    final String value1,
+                                    final String value2) {
+                                JaroWinkler jw = new JaroWinkler();
+                                return jw.similarity(value1, value2);
                             }
-
                         });
                         Graph<Double[]> graph_brute = builder.computeGraph(nodes_temp);
 
@@ -446,6 +336,7 @@ public class app_full {
             if (add_source==1) System.out.println("New nodes from a Uniform source");
             if (add_source==2) System.out.println("New nodes from a source from the 3 clusters randomly");
             if (add_source==3) System.out.println("New nodes from waves of points from one cluster (changing at each 1/6 adding points");
+            if (add_source==4) System.out.println("New nodes from complete new source");
 
 
             ArrayList<Double> avg_errors_global = new ArrayList<Double>();

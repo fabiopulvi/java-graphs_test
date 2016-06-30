@@ -1,11 +1,18 @@
 package info.debatty.java.graphs.examples;
 
-import info.debatty.java.graphs.*;
-import info.debatty.java.graphs.build.Brute;
 import info.debatty.java.datasets.gaussian.Center;
 import info.debatty.java.datasets.gaussian.Dataset;
+import info.debatty.java.graphs.*;
+import info.debatty.java.graphs.build.Brute;
 
-import java.util.*;
+import info.debatty.java.graphs.Node;
+import info.debatty.java.graphs.SimilarityInterface;
+import info.debatty.java.stringsimilarity.JaroWinkler;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 
@@ -19,25 +26,26 @@ import java.util.concurrent.ExecutionException;
  *
  *
  */
-public class app_full {
+public class app_full_newdistribution {
     public static int K = 4;
     public static int count =100;
-    public static int iterations=100;
+    public static int iterations=10;
     public static int run=1; // still hardcoded
     public static int depth=3;
     public static int number_deletion=6000;
     public static int quality_sampling=10;
     public static int max_value=100000;
     public static boolean random=true;
-    public static boolean adding_nodes=false;
+    public static boolean adding_nodes=true;
     public static int type_of_source=2;
-    public static int add_source=3;
+    public static int add_source=4;
     public static int wave = 1000;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         if (args.length!=11) {
             System.out.println("Input wrong! \nCorrect usage: K_of_the_graph number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value type_source() random_jump_boolean adding_node_boolean adding_source()" +
                     "type of source: 1 if uniform, 2 if 3 well separated clusters, 3 if 3 overlapping clusters "+
-            "\n type of adding source: 1 if uniform, 2 randomly from the three clusers, 3 if from just one of the cluster and changes after n/6 points (2 rounds for each source)");
+            "\n type of adding source: 1 if uniform, 2 randomly from the three clusers, 3 if from just one of the cluster and changes after n/6 points (2 rounds for each source)"
+            + "\n 4 if from a complete different data distribution");
 
         }
 
@@ -85,15 +93,18 @@ public class app_full {
                 Dataset gaussian_mixture = new Dataset();
                 Dataset gaussian_mixture_2 = new Dataset();
                 Dataset gaussian_mixture_3 = new Dataset();
+                Dataset gaussian_mixture_4 = new Dataset();
                 if ((type_of_source==1)||(type_of_source==2)) {
-                    Random r = new Random();
-                    for (int i = 0; i < count; i++) {
-                        // The value of our nodes will be an int
-                        double value = r.nextDouble();
-                        double value2=r.nextDouble();
-                        Double[] temp = new Double[]{r.nextDouble(),r.nextDouble()};
-                        nodes.add(new Node<Double[]>(String.valueOf(i), temp));
-                        nodes_og.add(new Node<Double[]>(String.valueOf(i), temp));
+                    if (type_of_source==1) {
+                        Random r = new Random();
+                        for (int i = 0; i < count; i++) {
+                            // The value of our nodes will be an int
+                            double value = r.nextDouble();
+                            double value2 = r.nextDouble();
+                            Double[] temp = new Double[]{r.nextDouble(), r.nextDouble()};
+                            nodes.add(new Node<Double[]>(String.valueOf(i), temp));
+                            nodes_og.add(new Node<Double[]>(String.valueOf(i), temp));
+                        }
                     }
                     gaussian_mixture.addCenter(
                             new Center(
@@ -138,9 +149,18 @@ public class app_full {
                                     new double[]{0.0, 86.6},
                                     new double[]{50.0, 50.0}));
                 }
+
+                    gaussian_mixture_4.addCenter(
+                            new Center(
+                                    2,
+                                    new double[]{0.0, -2000.0},
+                                    new double[]{50.0, 50.0}));
+
                 Iterator<Double[]> iterator = gaussian_mixture.iterator();
                 Iterator<Double[]> iterator_2 = gaussian_mixture_2.iterator();
                 Iterator<Double[]> iterator_3 = gaussian_mixture_3.iterator();
+
+                Iterator<Double[]> iterator_4 = gaussian_mixture_4.iterator();
                 if ((type_of_source==2)||(type_of_source==3)) {
                     //Iterator<Double[]> iterator = gaussian_mixture.iterator();
                     for (int i = 0; i < count/3; i++) {
@@ -186,11 +206,6 @@ public class app_full {
 
 
                     }
-
-
-
-
-
                 }
 
                 //create the two arrays of nodes
@@ -261,6 +276,10 @@ public class app_full {
                             if (data_source==3) {temp=iterator_3.next();}
 
                             }
+
+                        if (add_source==4) {
+                            temp=iterator_4.next();
+                        }
                         nodes.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
                         nodes_temp.add(new Node<Double[]>(String.valueOf(last_node_id), temp));
 

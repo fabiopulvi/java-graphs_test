@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="java-graphs_test:jar3">
+    <output-path>$PROJECT_DIR$/out/artifacts/java_graphs_test_jar3</output-path>
+    <root id="archive" name="java-graphs_test.jar">
+      <element id="module-output" name="main" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-email/1.4/commons-email-1.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jsoup/jsoup/1.8.3/jsoup-1.8.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/info/debatty/java-datasets/0.6/java-datasets-0.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/sun/mail/javax.mail/1.5.2/javax.mail-1.5.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/info/debatty/java-string-similarity/0.13/java-string-similarity-0.13.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/activation/activation/1.1.1/activation-1.1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/info/debatty/java-spamsum/0.1/java-spamsum-0.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
