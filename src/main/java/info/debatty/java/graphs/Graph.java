@@ -1202,16 +1202,18 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
 
             //}
             //System.out.println("this is the all candidates for node "+node2update+ ": "+candidates);
-            // System.out.println("this was its nl"+map.get(node2update));
+             //System.out.println("this was its nl"+map.get(node2update));
             Node<T> node_higher_similarity = null;
             double higher_similarity = 0;
+            if (candidates.size()==0) System.out.println("candidates is 0");
             for (Node<T> n2 : candidates) {
                 if ((!n2.equals(node2update)) && (!nl2update_array.contains(n2))) {
                     found = true;
                     double sim = similarity.similarity(
                             n2.value,
                             node2update.value);
-                    if (sim > higher_similarity) {
+                    if (sim >= higher_similarity) {
+
                         node_higher_similarity = n2;
                         higher_similarity = sim;
                     }
@@ -1222,10 +1224,7 @@ public class Graph<T> implements GraphInterface<T>, Serializable {
             // no nodes are available. Do the search!
             //System.out.println("this is the most compatible candidate for node "+node2update+ ": "+node_higher_similarity);
             if (found == true) {
-
-                oldNl.add(new Neighbor(
-                        node_higher_similarity,
-                        higher_similarity));
+                oldNl.add(new Neighbor(node_higher_similarity, higher_similarity));
                 modified++;  //modified only 1 edge
 
             }

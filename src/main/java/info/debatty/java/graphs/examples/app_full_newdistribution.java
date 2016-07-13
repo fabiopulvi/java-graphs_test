@@ -28,11 +28,11 @@ import java.util.concurrent.ExecutionException;
  */
 public class app_full_newdistribution {
     public static int K = 4;
-    public static int count =100;
+    public static int count =500;
     public static int iterations=10;
     public static int run=1; // still hardcoded
     public static int depth=3;
-    public static int number_deletion=6000;
+    public static int number_deletion=600;
     public static int quality_sampling=10;
     public static int max_value=100000;
     public static boolean random=true;
@@ -459,12 +459,7 @@ public class app_full_newdistribution {
                     "\n sampling= "+quality_sampling+
                     "\n random= "+random+
                     "\n adding node= "+adding_nodes);
-            if (type_of_source==1) System.out.println("Uniform source");
-            if (type_of_source==2) System.out.println("Source from 3 well separated clusters");
-            if (type_of_source==3) System.out.println("Source from 3 overlapping clusters");
-            if (add_source==1) System.out.println("New nodes from a Uniform source");
-            if (add_source==2) System.out.println("New nodes from a source from the 3 clusters randomly");
-            if (add_source==3) System.out.println("New nodes from waves of points from one cluster (changing at each 1/6 adding points");
+
 
 
             ArrayList<Double> avg_errors_global = new ArrayList<Double>();

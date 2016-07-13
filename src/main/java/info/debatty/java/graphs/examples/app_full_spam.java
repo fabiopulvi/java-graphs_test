@@ -26,13 +26,13 @@ import java.util.*;
  *
  */
 public class app_full_spam {
-    public static int K = 10;
-    public static int count =200;
-    public static int iterations=10;
+    public static int K = 2;
+    public static int count =2000;
+    public static int iterations=1;
     public static int run=1; // still hardcoded
     public static int depth=3;
-    public static int number_deletion=6000;
-    public static int quality_sampling=10;
+    public static int number_deletion=2000;
+    public static int quality_sampling=200;
     public static int max_value=100000;
     public static boolean random=true;
     public static boolean adding_nodes=true;
@@ -41,6 +41,7 @@ public class app_full_spam {
     public static int wave = 1000;
     public static int threshold_stream=count;
     public static void main(String[] args) throws ExecutionException, InterruptedException {
+        System.out.println("Spam experiment");
         if (args.length!=11) {
             System.out.println("Input wrong! \nCorrect usage: K_of_the_graph number_of_nodes number_deleted_nodes #iterations depth_of_deletion_update quality_sampling max_value type_source() random_jump_boolean adding_node_boolean adding_source()" +
                     "type of source: - disabled, just spam "+
@@ -76,7 +77,7 @@ public class app_full_spam {
             ArrayList<ArrayList<Double>> errors_trend_global_nodes_pc = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the total amount
             ArrayList<ArrayList<Double>> errors_trend_global_nodes_emt = new ArrayList<ArrayList<Double>>(); //number of nodes involved in the error wrt to the theoretical total amount
             // inf(nodes deleted * k;nodes_still there)
-            String path = "726-unique-spams";
+            String path = "spam-subject-200K_unique.txt";
             ArrayList<String> data = new ArrayList<String>();
             ArrayList<String> data_new = new ArrayList<String>();
             try {
@@ -224,6 +225,7 @@ public class app_full_spam {
                         double q=  1- ((double) wrong_edge/K);
                         errors_trend_single.add(wrong_edge);
                         double wrong_edges_pc = (double) wrong_edge / total_edges * 100;
+                        System.out.println(wrong_edges_pc);
                         double wrong_edges_emt = (double) wrong_edge / modified_edges_theo * 100;
                         double wrong_nodes_pc = (double) nodes_involved / remained_nodes * 100;
                         double wrong_nodes_emt = (double) nodes_involved / modified_nodes_theo * 100;
